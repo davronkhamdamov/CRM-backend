@@ -65,7 +65,7 @@ class Services(Base):
     updated_at = Column(DateTime)
 
 
-class tooth(Base):
+class Tooth(Base):
     __tablename__ = "tooth"
 
     id = Column(UUID, primary_key=True)

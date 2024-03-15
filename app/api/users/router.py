@@ -3,19 +3,17 @@ import uuid
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.api.crud import get_user, get_user_by_id, create_user, delete_user, update_user
 from app.api.schemas import Response, UserSchema
-from app.db import session_local
+from app.api.users.crud import (
+    get_user,
+    get_user_by_id,
+    create_user,
+    delete_user,
+    update_user,
+)
+from app.db import get_db
 
 router = APIRouter()
-
-
-def get_db():
-    db = session_local()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @router.get("/")
@@ -45,4 +43,4 @@ async def delete_user_route(user_id: uuid.UUID, db: Session = Depends(get_db)):
 @router.put("/{user_id}")
 async def update_user_route(user: UserSchema, db: Session = Depends(get_db)):
     _users = update_user(db, user)
-    return Response(code=201, status="ok", message="updated")
+    return Response(code=200, status="ok", message="updated")

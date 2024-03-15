@@ -21,7 +21,7 @@ class UserSchema(BaseModel):
     updated_at: datetime = None
 
 
-class Staffs(BaseModel):
+class StaffsSchema(BaseModel):
     id: uuid.UUID = None
     name: str = None
     surname: str = None
@@ -34,7 +34,7 @@ class Staffs(BaseModel):
     updated_at: datetime = None
 
 
-class Cure(BaseModel):
+class CureSchema(BaseModel):
     __tablename__ = "cure"
 
     id: uuid.UUID = None
@@ -50,7 +50,7 @@ class Cure(BaseModel):
     updated_at: datetime | None = None
 
 
-class Services(BaseModel):
+class ServicesSchema(BaseModel):
     id: uuid.UUID = None
     name: str = None
     price: int = None
@@ -60,14 +60,14 @@ class Services(BaseModel):
     updated_at: datetime | None = None
 
 
-class Tooth(BaseModel):
+class ToothSchema(BaseModel):
     id: uuid.UUID = None
     tooth_id: uuid.UUID = None
     created_at: datetime = None
     updated_at: datetime | None = None
 
 
-class Payments(BaseModel):
+class PaymentsSchema(BaseModel):
     id: uuid.UUID = None
     amount: int = None
     payment_type_id: uuid.UUID = None
@@ -76,7 +76,7 @@ class Payments(BaseModel):
     updated_at: datetime | None = None
 
 
-class Payment_type(BaseModel):
+class PaymentTypeSchema(BaseModel):
     id: uuid.UUID = None
     method: str = None
     created_at: datetime = None

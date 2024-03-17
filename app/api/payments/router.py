@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.api.payments.crud import (
@@ -16,31 +16,35 @@ from app.db import get_db
 router = APIRouter()
 
 
-@router.get("/")
-async def get_payment_route(skip: int, limit: int, db: Session = Depends(get_db)):
-    _payment = get_payment(db, skip, limit)
-    return Response(code=200, status="ok", message="success", result=_payment)
-
-
 @router.get("/{payment_id}")
 async def get_payment_by_id_route(payment_id: uuid.UUID, db: Session = Depends(get_db)):
     _payment = get_payment_by_id(db, payment_id)
-    return Response(code=200, status="ok", message="success", result=_payment)
+    return Response(code=200, status="ok", message="success", result=_payment).dict()
+
+
+@router.get("/")
+async def get_payment_route(
+    skip: int | None = None,
+    limit: int | None = Query(None, gt=9, lt=101),
+    db: Session = Depends(get_db),
+):
+    _payment = get_payment(db, skip, limit)
+    return Response(code=200, status="ok", message="success", result=_payment).dict()
 
 
 @router.post("/")
 async def create_payment_route(payment: PaymentsSchema, db: Session = Depends(get_db)):
     _payment = create_payment(db, payment)
-    return Response(code=201, status="ok", message="created")
+    return Response(code=201, status="ok", message="created").dict()
 
 
 @router.delete("/{payment_id}")
 async def delete_payment_route(payment_id: uuid.UUID, db: Session = Depends(get_db)):
-    _payment = delete_payment(db, payment_id)
-    return Response(code=200, status="ok", message="deleted")
+    delete_payment(db, payment_id)
+    return Response(code=200, status="ok", message="deleted").dict()
 
 
-@router.put("/{payment_id}")
+@router.put("/")
 async def update_payment_route(payment: PaymentsSchema, db: Session = Depends(get_db)):
     _payment = update_payment(db, payment)
-    return Response(code=201, status="ok", message="updated")
+    return Response(code=201, status="ok", message="updated", result=_payment).dict()

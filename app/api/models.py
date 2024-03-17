@@ -3,7 +3,7 @@ import uuid
 
 from sqlalchemy import Column, UUID, String, DateTime, Integer
 
-from app.db import Base
+from app.db import Base, engine
 
 
 class Users(Base):
@@ -17,7 +17,7 @@ class Users(Base):
     phone_number = Column(String, nullable=False)
     gender = Column(String, nullable=False)
     job = Column(String, nullable=False)
-    balance = Column(Integer, nullable=False)
+    balance = Column(Integer, default=0)
     created_at = Column(DateTime, default=datetime.UTC)
     updated_at = Column(DateTime)
 
@@ -92,3 +92,6 @@ class Payment_type(Base):
     method = Column(String)
     created_at = Column(DateTime, default=datetime.UTC)
     updated_at = Column(DateTime)
+
+
+Base.metadata.create_all(bind=engine)

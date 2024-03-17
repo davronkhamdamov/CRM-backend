@@ -1,5 +1,5 @@
-import datetime
 import uuid
+from datetime import datetime
 
 from sqlalchemy.orm import Session
 
@@ -12,11 +12,13 @@ def get_payment_type(db: Session, skip: int = 0, limit: int = 10):
 
 
 def get_payment_type_by_id(db: Session, payment_type_id: uuid.UUID):
-    return db.query(Payment_type).filter(Payment_type.id == payment_type_id)
+    return db.query(Payment_type).filter(Payment_type.id == payment_type_id).first()
 
 
 def create_payment_type(db: Session, payment_type: PaymentTypeSchema):
-    _payment_type = Payment_type(payment_type)
+    _payment_type = Payment_type(
+        method=payment_type.method, created_at=datetime.utcnow().isoformat()
+    )
     db.add(_payment_type)
     db.commit()
     db.refresh(_payment_type)
@@ -24,14 +26,15 @@ def create_payment_type(db: Session, payment_type: PaymentTypeSchema):
 
 
 def delete_payment_type(db: Session, payment_type_id: uuid.UUID):
-    _payment_type = get_payment_type_by_id(payment_type_id)
+    _payment_type = get_payment_type_by_id(db, payment_type_id)
     db.delete(_payment_type)
     db.commit()
 
 
 def update_payment_type(db: Session, payment_type: PaymentTypeSchema):
-    _payment_type = get_payment_type_by_id(payment_type.id)
+    _payment_type = get_payment_type_by_id(db, payment_type.id)
     _payment_type.method = payment_type.method
-    _payment_type.updated_at = datetime.UTC
+    _payment_type.updated_at = datetime.datetime.utcnow().isoformat()
     db.commit()
     db.refresh(_payment_type)
+    return _payment_type

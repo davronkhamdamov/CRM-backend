@@ -19,28 +19,28 @@ router = APIRouter()
 @router.get("/")
 async def get_tooth_route(skip: int, limit: int, db: Session = Depends(get_db)):
     _tooth = get_tooth(db, skip, limit)
-    return Response(code=200, status="ok", message="success", result=_tooth)
+    return Response(code=200, status="ok", message="success", result=_tooth).dict()
 
 
 @router.get("/{tooth_id}")
 async def get_tooth_by_id_route(tooth_id: uuid.UUID, db: Session = Depends(get_db)):
     _tooth = get_tooth_by_id(db, tooth_id)
-    return Response(code=200, status="ok", message="success", result=_tooth)
+    return Response(code=200, status="ok", message="success", result=_tooth).dict()
 
 
 @router.post("/")
 async def create_tooth_route(tooth: ToothSchema, db: Session = Depends(get_db)):
     create_tooth(db, tooth)
-    return Response(code=201, status="ok", message="created")
+    return Response(code=201, status="ok", message="created").dict()
 
 
 @router.delete("/{tooth_id}")
 async def delete_tooth_route(tooth_id: uuid.UUID, db: Session = Depends(get_db)):
     delete_tooth(db, tooth_id)
-    return Response(code=200, status="ok", message="deleted")
+    return Response(code=200, status="ok", message="deleted").dict()
 
 
-@router.put("/{tooth_id}")
+@router.put("/")
 async def update_tooth_route(tooth: ToothSchema, db: Session = Depends(get_db)):
-    update_tooth(db, tooth)
-    return Response(code=201, status="ok", message="updated")
+    _tooth = update_tooth(db, tooth)
+    return Response(code=200, status="ok", message="updated", result=_tooth).dict()

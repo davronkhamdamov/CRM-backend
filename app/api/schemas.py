@@ -16,7 +16,7 @@ class UserSchema(BaseModel):
     phone_number: str = None
     gender: str = None
     job: str = None
-    balance: int = None
+    balance: int | None = None
     created_at: datetime = None
     updated_at: datetime = None
 
@@ -37,11 +37,11 @@ class StaffsSchema(BaseModel):
 class CureSchema(BaseModel):
     __tablename__ = "cure"
 
-    id: uuid.UUID = None
+    id: uuid.UUID | None = None
     staff_id: uuid.UUID = None
     service_id: uuid.UUID = None
     user_id: uuid.UUID = None
-    is_done: str = None
+    is_done: str | None = None
     start_time: str = None
     end_time: str = None
     img_url: str = None

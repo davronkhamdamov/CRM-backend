@@ -19,13 +19,17 @@ router = APIRouter()
 @router.get("/")
 async def get_tooth_route(skip: int, limit: int, db: Session = Depends(get_db)):
     _tooth = get_tooth(db, skip, limit)
-    return Response(code=200, status="ok", message="success", result=_tooth).model_dump()
+    return Response(
+        code=200, status="ok", message="success", result=_tooth
+    ).model_dump()
 
 
 @router.get("/{tooth_id}")
 async def get_tooth_by_id_route(tooth_id: uuid.UUID, db: Session = Depends(get_db)):
     _tooth = get_tooth_by_id(db, tooth_id)
-    return Response(code=200, status="ok", message="success", result=_tooth).model_dump()
+    return Response(
+        code=200, status="ok", message="success", result=_tooth
+    ).model_dump()
 
 
 @router.post("/")
@@ -43,4 +47,6 @@ async def delete_tooth_route(tooth_id: uuid.UUID, db: Session = Depends(get_db))
 @router.put("/")
 async def update_tooth_route(tooth: ToothSchema, db: Session = Depends(get_db)):
     _tooth = update_tooth(db, tooth)
-    return Response(code=200, status="ok", message="updated", result=_tooth).model_dump()
+    return Response(
+        code=200, status="ok", message="updated", result=_tooth
+    ).model_dump()

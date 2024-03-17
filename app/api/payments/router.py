@@ -19,7 +19,9 @@ router = APIRouter()
 @router.get("/{payment_id}")
 async def get_payment_by_id_route(payment_id: uuid.UUID, db: Session = Depends(get_db)):
     _payment = get_payment_by_id(db, payment_id)
-    return Response(code=200, status="ok", message="success", result=_payment).dict()
+    return Response(
+        code=200, status="ok", message="success", result=_payment
+    ).model_dump()
 
 
 @router.get("/")
@@ -29,22 +31,26 @@ async def get_payment_route(
     db: Session = Depends(get_db),
 ):
     _payment = get_payment(db, skip, limit)
-    return Response(code=200, status="ok", message="success", result=_payment).dict()
+    return Response(
+        code=200, status="ok", message="success", result=_payment
+    ).model_dump()
 
 
 @router.post("/")
 async def create_payment_route(payment: PaymentsSchema, db: Session = Depends(get_db)):
     _payment = create_payment(db, payment)
-    return Response(code=201, status="ok", message="created").dict()
+    return Response(code=201, status="ok", message="created").model_dump()
 
 
 @router.delete("/{payment_id}")
 async def delete_payment_route(payment_id: uuid.UUID, db: Session = Depends(get_db)):
     delete_payment(db, payment_id)
-    return Response(code=200, status="ok", message="deleted").dict()
+    return Response(code=200, status="ok", message="deleted").model_dump()
 
 
 @router.put("/")
 async def update_payment_route(payment: PaymentsSchema, db: Session = Depends(get_db)):
     _payment = update_payment(db, payment)
-    return Response(code=201, status="ok", message="updated", result=_payment).dict()
+    return Response(
+        code=201, status="ok", message="updated", result=_payment
+    ).model_dump()

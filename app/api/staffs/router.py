@@ -19,28 +19,32 @@ router = APIRouter()
 @router.get("/")
 async def get_staffs_route(skip: int, limit: int, db: Session = Depends(get_db)):
     _staffs = get_staff(db, skip, limit)
-    return Response(code=200, status="ok", message="success", result=_staffs).dict()
+    return Response(
+        code=200, status="ok", message="success", result=_staffs
+    ).model_dump()
 
 
 @router.get("/{staff_id}")
 async def get_staff_by_id_route(staff_id: uuid.UUID, db: Session = Depends(get_db)):
     _staffs = get_staff_by_id(db, staff_id)
-    return Response(code=200, status="ok", message="success", result=_staffs).dict()
+    return Response(
+        code=200, status="ok", message="success", result=_staffs
+    ).model_dump()
 
 
 @router.post("/")
 async def create_staff_route(staff: StaffsSchema, db: Session = Depends(get_db)):
     _staffs = create_staff(db, staff)
-    return Response(code=201, status="ok", message="created").dict()
+    return Response(code=201, status="ok", message="created").model_dump()
 
 
 @router.delete("/{staff_id}")
 async def delete_staff_route(staff_id: uuid.UUID, db: Session = Depends(get_db)):
     _staffs = delete_staff(db, staff_id)
-    return Response(code=200, status="ok", message="deleted").dict()
+    return Response(code=200, status="ok", message="deleted").model_dump()
 
 
 @router.put("/")
 async def update_staff_route(staff: StaffsSchema, db: Session = Depends(get_db)):
     _staffs = update_staff(db, staff)
-    return Response(code=201, status="ok", message="updated").dict()
+    return Response(code=201, status="ok", message="updated").model_dump()

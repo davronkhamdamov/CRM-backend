@@ -33,7 +33,7 @@ async def get_payment_type_route(
     _payment_type = get_payment_type(db, skip, limit)
     return Response(
         code=200, status="ok", message="success", result=_payment_type
-    ).dict()
+    ).model_dump()
 
 
 @router.post("/")
@@ -41,7 +41,7 @@ async def create_payment_type_route(
     payment_type: PaymentTypeSchema, db: Session = Depends(get_db)
 ):
     _payment_type = create_payment_type(db, payment_type)
-    return Response(code=201, status="ok", message="created").dict()
+    return Response(code=201, status="ok", message="created").model_dump()
 
 
 @router.delete("/{payment_type_id}")
@@ -49,7 +49,7 @@ async def delete_payment_type_route(
     payment_type_id: uuid.UUID, db: Session = Depends(get_db)
 ):
     delete_payment_type(db, payment_type_id)
-    return Response(code=200, status="ok", message="deleted").dict()
+    return Response(code=200, status="ok", message="deleted").model_dump()
 
 
 @router.put("/")
@@ -59,4 +59,4 @@ async def update_payment_type_route(
     _payment_type = update_payment_type(db, payment_type)
     return Response(
         code=200, status="ok", message="updated", result=payment_type
-    ).dict()
+    ).model_dump()

@@ -31,8 +31,20 @@ async def get_payment_route(
     db: Session = Depends(get_db),
 ):
     _payment = get_payment(db, skip, limit)
+    results_dict = [
+        {
+            "amount": payment.amount,
+            "payment_type_id": payment.payment_type_id,
+            "method": payment_type.method,
+            "username": user.name,
+            "surname": user.surname,
+            "id": payment.id,
+        }
+        for payment, payment_type, user in _payment
+    ]
+
     return Response(
-        code=200, status="ok", message="success", result=_payment
+        code=200, status="ok", message="success", result=results_dict
     ).model_dump()
 
 

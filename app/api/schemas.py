@@ -87,4 +87,6 @@ class Response(BaseModel, Generic[T]):
     code: int
     status: str
     message: str
+    total: int | None = None
     result: Optional[T] = None
+    info: dict | None = None

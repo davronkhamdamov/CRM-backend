@@ -1,14 +1,34 @@
 import datetime
 import uuid
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.api.models import Users
 from app.api.schemas import UserSchema
 
 
-def get_user(db: Session, skip: int = 0, limit: int = 10):
-    return db.query(Users).offset(skip).limit(limit).all()
+def get_user(db: Session, skip: int = 0, limit: int = 10, order_by: str | None = None):
+    if skip < 0:
+        skip = 0
+    print(order_by)
+    if order_by == "descend":
+        return (
+            db.query(Users).order_by(Users.name.desc()).offset(skip).limit(limit).all()
+        )
+    elif order_by == "ascend":
+        return db.query(Users).order_by(Users.name).offset(skip).limit(limit).all()
+    return (
+        db.query(Users)
+        .order_by(Users.created_at.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+
+def count_users(db: Session):
+    return db.query(func.count(Users.id)).scalar()
 
 
 def get_user_by_id(db: Session, user_id: uuid.UUID):
@@ -33,8 +53,7 @@ def create_user(db: Session, user: UserSchema):
 
 
 def delete_user(db: Session, user_id: uuid.UUID):
-    _user = get_user_by_id(db, user_id)
-    db.delete(_user)
+    db.query(Users).filter(Users.id == user_id).delete()
     db.commit()
 
 

@@ -1,5 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.cure.router import router as cure_router
 from app.api.payment_type.router import router as payment_type_router
@@ -10,6 +11,14 @@ from app.api.tooth.router import router as tooth_router
 from app.api.users.router import router as user_router
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(router=user_router, prefix="/user", tags=["Users"])
 app.include_router(router=payment_router, prefix="/payment", tags=["Payments"])

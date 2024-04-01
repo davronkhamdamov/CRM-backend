@@ -40,7 +40,7 @@ async def get_payment_type_route(
 async def create_payment_type_route(
     payment_type: PaymentTypeSchema, db: Session = Depends(get_db)
 ):
-    _payment_type = create_payment_type(db, payment_type)
+    create_payment_type(db, payment_type)
     return Response(code=201, status="ok", message="created").model_dump()
 
 

@@ -3,12 +3,23 @@ from datetime import datetime
 
 from sqlalchemy.orm import Session
 
-from app.api.models import Payments
+from app.api.models import Payments, Payment_type, Users
 from app.api.schemas import PaymentsSchema
+from app.api.users.crud import get_user_by_id
 
 
 def get_payment(db: Session, skip: int = 0, limit: int = 10):
-    return db.query(Payments).offset(skip).limit(limit).all()
+    _payment = (
+        db.query(Payments, Payment_type, Users)
+        .select_from(Users)
+        .join(Payments, Users.id == Payments.user_id)
+        .join(Payment_type, Payments.payment_type_id == Payment_type.id)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+    return _payment
 
 
 def get_payment_by_id(db: Session, payment_id: uuid.UUID):
@@ -16,6 +27,7 @@ def get_payment_by_id(db: Session, payment_id: uuid.UUID):
 
 
 def create_payment(db: Session, payment: PaymentsSchema):
+    print(payment.payment_type_id)
     _payment = Payments(
         amount=payment.amount,
         payment_type_id=payment.payment_type_id,
@@ -23,8 +35,11 @@ def create_payment(db: Session, payment: PaymentsSchema):
         created_at=datetime.utcnow().isoformat(),
     )
     db.add(_payment)
+    _user = get_user_by_id(db, user_id=payment.user_id)
+    _user.balance += payment.amount
     db.commit()
     db.refresh(_payment)
+    db.refresh(_user)
     return _payment
 
 

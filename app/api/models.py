@@ -1,7 +1,7 @@
 import datetime
 import uuid
 
-from sqlalchemy import Column, UUID, String, DateTime, Integer
+from sqlalchemy import Column, UUID, String, DateTime, Integer, ForeignKey
 
 from app.db import Base, engine
 
@@ -25,7 +25,7 @@ class Users(Base):
 class Staffs(Base):
     __tablename__ = "staffs"
 
-    id = Column(UUID, primary_key=True)
+    id = Column(UUID, primary_key=True, default=uuid.uuid4())
     name = Column(String, index=True, nullable=False)
     surname = Column(String, index=True, nullable=False)
     date_birth = Column(DateTime, nullable=False)
@@ -40,7 +40,7 @@ class Staffs(Base):
 class Cure(Base):
     __tablename__ = "cure"
 
-    id = Column(UUID, primary_key=True)
+    id = Column(UUID, primary_key=True, default=uuid.uuid4())
     staff_id = Column(UUID)
     service_id = Column(UUID)
     user_id = Column(UUID)
@@ -56,7 +56,7 @@ class Cure(Base):
 class Services(Base):
     __tablename__ = "services"
 
-    id = Column(UUID, primary_key=True)
+    id = Column(UUID, primary_key=True, default=uuid.uuid4())
     name = Column(String, nullable=False)
     price = Column(Integer, nullable=False)
     raw_material_price = Column(Integer, nullable=False)
@@ -68,7 +68,7 @@ class Services(Base):
 class Tooth(Base):
     __tablename__ = "tooth"
 
-    id = Column(UUID, primary_key=True)
+    id = Column(UUID, primary_key=True, default=uuid.uuid4())
     tooth_id = Column(Integer, nullable=False)
     created_at = Column(DateTime, default=datetime.UTC)
     updated_at = Column(DateTime)
@@ -77,10 +77,10 @@ class Tooth(Base):
 class Payments(Base):
     __tablename__ = "payment"
 
-    id = Column(UUID, primary_key=True)
+    id = Column(UUID, primary_key=True, default=uuid.uuid4())
     amount = Column(Integer)
-    payment_type_id = Column(UUID)
-    user_id = Column(UUID)
+    payment_type_id = Column(UUID, ForeignKey("payment_type.id"))
+    user_id = Column(UUID, ForeignKey("users.id"))
     created_at = Column(DateTime, default=datetime.UTC)
     updated_at = Column(DateTime)
 
@@ -88,7 +88,7 @@ class Payments(Base):
 class Payment_type(Base):
     __tablename__ = "payment_type"
 
-    id = Column(UUID, primary_key=True)
+    id = Column(UUID, primary_key=True, default=uuid.uuid4())
     method = Column(String)
     created_at = Column(DateTime, default=datetime.UTC)
     updated_at = Column(DateTime)

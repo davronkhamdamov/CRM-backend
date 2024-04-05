@@ -1,4 +1,5 @@
 import uuid
+from typing import Optional
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
@@ -20,8 +21,8 @@ router = APIRouter()
 
 @router.get("/")
 async def get_services_route(
-    skip: int | None = None,
-    limit: int | None = Query(None, gt=9, lt=101),
+    skip: Optional[int] = None,
+    limit: Optional[int] = Query(None, gt=9, lt=101),
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
 ):

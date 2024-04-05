@@ -1,4 +1,5 @@
 import uuid
+from typing import Optional
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
@@ -29,8 +30,8 @@ async def get_cure_by_id_route(
 
 @router.get("/")
 async def get_cures_route(
-    skip: int | None = None,
-    limit: int | None = Query(None, gt=9, lt=101),
+    skip: Optional[int] = None,
+    limit: Optional[int] = Query(None, gt=9, lt=101),
     db: Session = Depends(get_db),
     current_staff: dict = Depends(get_current_user),
 ):

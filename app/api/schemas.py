@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Optional, Generic, TypeVar
+from typing import Generic, TypeVar, Optional
 
 from pydantic import BaseModel
 
@@ -8,7 +8,7 @@ T = TypeVar("T")
 
 
 class UserSchema(BaseModel):
-    id: uuid.UUID | None = None
+    id: Optional[uuid.UUID] = None
     name: str = None
     surname: str = None
     date_birth: datetime = None
@@ -16,9 +16,9 @@ class UserSchema(BaseModel):
     phone_number: str = None
     gender: str = None
     job: str = None
-    balance: int | None = None
+    balance: Optional[int] = None
     created_at: datetime = None
-    updated_at: datetime = None
+    updated_at: Optional[datetime] = None
 
 
 class StaffsSchema(BaseModel):
@@ -26,29 +26,29 @@ class StaffsSchema(BaseModel):
     name: str = None
     surname: str = None
     address: str = None
-    login: str | None = None
-    password: str | None = None
+    login: Optional[str] = None
+    password: Optional[str] = None
     phone_number: str = None
     gender: str = None
     role: str = None
     created_at: datetime = None
-    updated_at: datetime = None
+    updated_at: Optional[datetime] = None
 
 
 class CureSchema(BaseModel):
     __tablename__ = "cure"
 
-    id: uuid.UUID | None = None
+    id: Optional[uuid.UUID] = None
     staff_id: uuid.UUID = None
     service_id: uuid.UUID = None
     user_id: uuid.UUID = None
-    is_done: str | None = None
+    is_done: Optional[str] = None
     start_time: str = None
     end_time: str = None
     img_url: str = None
     tooth_id: str = None
     created_at: datetime = None
-    updated_at: datetime | None = None
+    updated_at: Optional[datetime] = None
 
 
 class ServicesSchema(BaseModel):
@@ -59,14 +59,14 @@ class ServicesSchema(BaseModel):
     raw_material_price: int = None
     service_price_price: int = None
     created_at: datetime = None
-    updated_at: datetime | None = None
+    updated_at: Optional[datetime] = None
 
 
 class ToothSchema(BaseModel):
     id: uuid.UUID = None
     tooth_id: uuid.UUID = None
     created_at: datetime = None
-    updated_at: datetime | None = None
+    updated_at: Optional[datetime] = None
 
 
 class PaymentsSchema(BaseModel):
@@ -75,23 +75,23 @@ class PaymentsSchema(BaseModel):
     payment_type_id: uuid.UUID = None
     user_id: uuid.UUID = None
     created_at: datetime = None
-    updated_at: datetime | None = None
+    updated_at: Optional[datetime] = None
 
 
 class PaymentTypeSchema(BaseModel):
     id: uuid.UUID = None
     method: str = None
     created_at: datetime = None
-    updated_at: datetime | None = None
+    updated_at: Optional[datetime] = None
 
 
 class Response(BaseModel, Generic[T]):
     code: int
     status: str
     message: str
-    total: int | None = None
+    total: Optional[int] = None
     result: Optional[T] = None
-    info: dict | None = None
+    info: Optional[dict] = None
 
 
 class LoginSchema(BaseModel):

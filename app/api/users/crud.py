@@ -1,5 +1,6 @@
 import datetime
 import uuid
+from typing import Optional
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -8,7 +9,9 @@ from app.api.models import Users
 from app.api.schemas import UserSchema
 
 
-def get_user(db: Session, skip: int = 0, limit: int = 10, order_by: str | None = None):
+def get_user(
+    db: Session, skip: int = 0, limit: int = 10, order_by: Optional[str] = None
+):
     if skip < 0:
         skip = 0
     print(order_by)

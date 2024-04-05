@@ -13,13 +13,18 @@ from app.api.users.crud import (
     count_users,
 )
 from app.db import get_db
+from app.utils.auth_middleware import get_current_user
 from app.utils.money_format import format_money
 
 router = APIRouter()
 
 
 @router.get("/{user_id}")
-async def get_user_by_id_route(user_id: uuid.UUID, db: Session = Depends(get_db)):
+async def get_user_by_id_route(
+    user_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
     _user = get_user_by_id(db, user_id)
     _user.balance = format_money(_user.balance)
     return Response(code=200, status="ok", message="success", result=_user).model_dump()
@@ -29,10 +34,10 @@ async def get_user_by_id_route(user_id: uuid.UUID, db: Session = Depends(get_db)
 async def get_users_route(
     req: Request,
     db: Session = Depends(get_db),
+    _=Depends(get_current_user),
 ):
-
     limit = int(req.query_params.get("results") or 10)
-    skip = int(req.query_params.get("page") or 0) - 1
+    skip = int(req.query_params.get("page") or 0)
     _users = get_user(
         db, limit=limit, skip=skip, order_by=req.query_params.get("order")
     )
@@ -65,13 +70,21 @@ async def get_users_route(
 
 
 @router.post("/")
-async def create_user_route(user: UserSchema, db: Session = Depends(get_db)):
+async def create_user_route(
+    user: UserSchema,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
     create_user(db, user)
     return Response(code=201, status="ok", message="created").dict()
 
 
 @router.delete("/{user_id}")
-async def delete_user_route(user_id: uuid.UUID, db: Session = Depends(get_db)):
+async def delete_user_route(
+    user_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
     delete_user(db, user_id)
     return Response(
         code=200,
@@ -81,6 +94,8 @@ async def delete_user_route(user_id: uuid.UUID, db: Session = Depends(get_db)):
 
 
 @router.put("/")
-async def update_user_route(user: UserSchema, db: Session = Depends(get_db)):
+async def update_user_route(
+    user: UserSchema, db: Session = Depends(get_db), _=Depends(get_current_user)
+):
     _user = update_user(db, user)
     return Response(code=200, status="ok", message="updated", result=_user).model_dump()

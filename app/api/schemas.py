@@ -92,3 +92,8 @@ class Response(BaseModel, Generic[T]):
     total: int | None = None
     result: Optional[T] = None
     info: dict | None = None
+
+
+class LoginSchema(BaseModel):
+    login: str
+    password: str

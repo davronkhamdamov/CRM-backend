@@ -13,12 +13,17 @@ from app.api.staffs.crud import (
     count_staffs,
 )
 from app.db import get_db
+from app.utils.auth_middleware import get_current_user
 
 router = APIRouter()
 
 
 @router.get("/")
-async def get_staffs_route(req: Request, db: Session = Depends(get_db)):
+async def get_staffs_route(
+    req: Request,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
     limit = int(req.query_params.get("results") or 10)
     skip = int(req.query_params.get("page") or 0) - 1
     _staffs = get_staff(db=db, skip=skip, limit=limit)
@@ -34,7 +39,11 @@ async def get_staffs_route(req: Request, db: Session = Depends(get_db)):
 
 
 @router.get("/{staff_id}")
-async def get_staff_by_id_route(staff_id: uuid.UUID, db: Session = Depends(get_db)):
+async def get_staff_by_id_route(
+    staff_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
     _staffs = get_staff_by_id(db, staff_id)
     return Response(
         code=200, status="ok", message="success", result=_staffs
@@ -42,18 +51,30 @@ async def get_staff_by_id_route(staff_id: uuid.UUID, db: Session = Depends(get_d
 
 
 @router.post("/")
-async def create_staff_route(staff: StaffsSchema, db: Session = Depends(get_db)):
+async def create_staff_route(
+    staff: StaffsSchema,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
     _staffs = create_staff(db, staff)
     return Response(code=201, status="ok", message="created").model_dump()
 
 
 @router.delete("/{staff_id}")
-async def delete_staff_route(staff_id: uuid.UUID, db: Session = Depends(get_db)):
+async def delete_staff_route(
+    staff_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
     _staffs = delete_staff(db, staff_id)
     return Response(code=200, status="ok", message="deleted").model_dump()
 
 
 @router.put("/")
-async def update_staff_route(staff: StaffsSchema, db: Session = Depends(get_db)):
+async def update_staff_route(
+    staff: StaffsSchema,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
     _staffs = update_staff(db, staff)
     return Response(code=201, status="ok", message="updated").model_dump()

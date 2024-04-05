@@ -58,12 +58,3 @@ def update_staff(db: Session, staff: StaffsSchema):
     db.commit()
     db.refresh(_staff)
     return _staff
-
-
-# hashed_entered_password = hashlib.sha256(entered_password.encode()).hexdigest()
-#
-# # Compare hashed_entered_password with stored hashed_password
-# if hashed_entered_password == hashed_password:
-#     print("Password is correct!")
-# else:
-#     print("Incorrect password.")

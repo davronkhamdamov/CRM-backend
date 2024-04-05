@@ -12,12 +12,18 @@ from app.api.tooth.crud import (
     update_tooth,
 )
 from app.db import get_db
+from app.utils.auth_middleware import get_current_user
 
 router = APIRouter()
 
 
 @router.get("/")
-async def get_tooth_route(skip: int, limit: int, db: Session = Depends(get_db)):
+async def get_tooth_route(
+    skip: int,
+    limit: int,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
     _tooth = get_tooth(db, skip, limit)
     return Response(
         code=200, status="ok", message="success", result=_tooth
@@ -25,7 +31,11 @@ async def get_tooth_route(skip: int, limit: int, db: Session = Depends(get_db)):
 
 
 @router.get("/{tooth_id}")
-async def get_tooth_by_id_route(tooth_id: uuid.UUID, db: Session = Depends(get_db)):
+async def get_tooth_by_id_route(
+    tooth_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
     _tooth = get_tooth_by_id(db, tooth_id)
     return Response(
         code=200, status="ok", message="success", result=_tooth
@@ -33,19 +43,31 @@ async def get_tooth_by_id_route(tooth_id: uuid.UUID, db: Session = Depends(get_d
 
 
 @router.post("/")
-async def create_tooth_route(tooth: ToothSchema, db: Session = Depends(get_db)):
+async def create_tooth_route(
+    tooth: ToothSchema,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
     create_tooth(db, tooth)
     return Response(code=201, status="ok", message="created").model_dump()
 
 
 @router.delete("/{tooth_id}")
-async def delete_tooth_route(tooth_id: uuid.UUID, db: Session = Depends(get_db)):
+async def delete_tooth_route(
+    tooth_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
     delete_tooth(db, tooth_id)
     return Response(code=200, status="ok", message="deleted").model_dump()
 
 
 @router.put("/")
-async def update_tooth_route(tooth: ToothSchema, db: Session = Depends(get_db)):
+async def update_tooth_route(
+    tooth: ToothSchema,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
     _tooth = update_tooth(db, tooth)
     return Response(
         code=200, status="ok", message="updated", result=_tooth

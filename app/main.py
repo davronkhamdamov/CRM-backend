@@ -2,6 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.auth.router import router as auth_route
 from app.api.cure.router import router as cure_router
 from app.api.payment_type.router import router as payment_type_router
 from app.api.payments.router import router as payment_router
@@ -20,6 +21,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(router=auth_route, prefix="/auth", tags=["Login"])
 app.include_router(router=user_router, prefix="/user", tags=["Users"])
 app.include_router(router=payment_router, prefix="/payment", tags=["Payments"])
 app.include_router(

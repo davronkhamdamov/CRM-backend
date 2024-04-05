@@ -22,11 +22,11 @@ router = APIRouter()
 async def get_staffs_route(
     req: Request,
     db: Session = Depends(get_db),
-    _=Depends(get_current_user),
+    current_user: dict = Depends(get_current_user),
 ):
     limit = int(req.query_params.get("results") or 10)
     skip = int(req.query_params.get("page") or 0) - 1
-    _staffs = get_staff(db=db, skip=skip, limit=limit)
+    _staffs = get_staff(db=db, skip=skip, limit=limit, current_user=current_user)
     _count_of_staffs = count_staffs(db)
     return Response(
         code=200,
@@ -35,6 +35,17 @@ async def get_staffs_route(
         result=_staffs,
         total=_count_of_staffs,
         info={"result": limit, "page": skip},
+    ).model_dump()
+
+
+@router.get("/get-me")
+async def get_me(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    _staff = get_staff_by_id(db, current_user["id"])
+    return Response(
+        code=200, status="ok", message="success", result=_staff
     ).model_dump()
 
 

@@ -9,8 +9,16 @@ from app.api.models import Staffs
 from app.api.schemas import StaffsSchema
 
 
-def get_staff(db: Session, skip: int = 0, limit: int = 10):
-    return db.query(Staffs).offset(skip).limit(limit).all()
+def get_staff(
+    db: Session, skip: int = 0, limit: int = 10, current_user: StaffsSchema = None
+):
+    return (
+        db.query(Staffs)
+        .filter(Staffs.id != current_user["id"])
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
 
 
 def count_staffs(db: Session):

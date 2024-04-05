@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
 from app.api.payments.crud import (
@@ -9,9 +9,11 @@ from app.api.payments.crud import (
     create_payment,
     delete_payment,
     update_payment,
+    count_payments,
 )
 from app.api.schemas import Response, PaymentsSchema
 from app.db import get_db
+from app.utils.money_format import format_money
 
 router = APIRouter()
 
@@ -26,25 +28,34 @@ async def get_payment_by_id_route(payment_id: uuid.UUID, db: Session = Depends(g
 
 @router.get("/")
 async def get_payment_route(
-    skip: int | None = None,
-    limit: int | None = Query(None, gt=9, lt=101),
+    req: Request,
     db: Session = Depends(get_db),
 ):
+    limit = int(req.query_params.get("results") or 10)
+    skip = int(req.query_params.get("page") or 0) - 1
+
     _payment = get_payment(db, skip, limit)
+    count_of_payments = count_payments(db)
     results_dict = [
         {
-            "amount": payment.amount,
+            "amount": format_money(payment.amount),
             "payment_type_id": payment.payment_type_id,
             "method": payment_type.method,
             "username": user.name,
             "surname": user.surname,
             "id": payment.id,
+            "user_id": user.id,
         }
         for payment, payment_type, user in _payment
     ]
 
     return Response(
-        code=200, status="ok", message="success", result=results_dict
+        code=200,
+        status="ok",
+        message="success",
+        result=results_dict,
+        total=count_of_payments,
+        info={"result": limit, "page": skip},
     ).model_dump()
 
 

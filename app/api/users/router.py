@@ -13,16 +13,16 @@ from app.api.users.crud import (
     count_users,
 )
 from app.db import get_db
+from app.utils.money_format import format_money
 
 router = APIRouter()
 
 
 @router.get("/{user_id}")
 async def get_user_by_id_route(user_id: uuid.UUID, db: Session = Depends(get_db)):
-    _users = get_user_by_id(db, user_id)
-    return Response(
-        code=200, status="ok", message="success", result=_users
-    ).model_dump()
+    _user = get_user_by_id(db, user_id)
+    _user.balance = format_money(_user.balance)
+    return Response(code=200, status="ok", message="success", result=_user).model_dump()
 
 
 @router.get("/")
@@ -37,11 +37,28 @@ async def get_users_route(
         db, limit=limit, skip=skip, order_by=req.query_params.get("order")
     )
     _count_of_users = count_users(db)
+
     return Response(
         code=200,
         status="ok",
         message="success",
-        result=_users,
+        result=[
+            {
+                "id": user.id,
+                "name": user.name,
+                "surname": user.surname,
+                "date_birth": user.date_birth,
+                "address": user.address,
+                "phone_number": user.phone_number,
+                "gender": user.gender,
+                "job": user.job,
+                "balance": format_money(user.balance),
+                "address": user.address,
+                "created_at": user.created_at,
+                "updated_at": user.updated_at,
+            }
+            for user in _users
+        ],
         total=_count_of_users,
         info={"result": limit, "page": skip},
     ).dict()

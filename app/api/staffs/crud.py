@@ -1,6 +1,8 @@
+import hashlib
 import uuid
 from datetime import datetime
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.api.models import Staffs
@@ -11,6 +13,10 @@ def get_staff(db: Session, skip: int = 0, limit: int = 10):
     return db.query(Staffs).offset(skip).limit(limit).all()
 
 
+def count_staffs(db: Session):
+    return db.query(func.count(Staffs.id)).scalar()
+
+
 def get_staff_by_id(db: Session, staff_id: uuid.UUID):
     return db.query(Staffs).filter(Staffs.id == staff_id).first()
 
@@ -19,8 +25,9 @@ def create_staff(db: Session, staff: StaffsSchema):
     _staff = Staffs(
         name=staff.name,
         surname=staff.surname,
-        date_birth=staff.date_birth,
         address=staff.address,
+        login=staff.login,
+        password=hashlib.sha256(staff.password.encode()).hexdigest(),
         phone_number=staff.phone_number,
         gender=staff.gender,
         role=staff.role,
@@ -51,3 +58,12 @@ def update_staff(db: Session, staff: StaffsSchema):
     db.commit()
     db.refresh(_staff)
     return _staff
+
+
+# hashed_entered_password = hashlib.sha256(entered_password.encode()).hexdigest()
+#
+# # Compare hashed_entered_password with stored hashed_password
+# if hashed_entered_password == hashed_password:
+#     print("Password is correct!")
+# else:
+#     print("Incorrect password.")

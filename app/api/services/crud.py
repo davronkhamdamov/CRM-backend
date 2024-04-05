@@ -19,6 +19,7 @@ def create_service(db: Session, service: ServicesSchema):
     _service = Services(
         name=service.name,
         price=service.price,
+        status=service.status,
         raw_material_price=service.raw_material_price,
         service_price_price=service.service_price_price,
         created_at=datetime.utcnow().isoformat(),

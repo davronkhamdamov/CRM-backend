@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.api.models import Payments, Payment_type, Users
@@ -20,6 +21,10 @@ def get_payment(db: Session, skip: int = 0, limit: int = 10):
     )
 
     return _payment
+
+
+def count_payments(db: Session):
+    return db.query(func.count(Payments.id)).scalar()
 
 
 def get_payment_by_id(db: Session, payment_id: uuid.UUID):

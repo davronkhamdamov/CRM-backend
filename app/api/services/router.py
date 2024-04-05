@@ -12,6 +12,7 @@ from app.api.services.crud import (
     update_service,
 )
 from app.db import get_db
+from app.utils.money_format import format_money
 
 router = APIRouter()
 
@@ -24,13 +25,31 @@ async def get_services_route(
 ):
     _services = get_service(db, skip, limit)
     return Response(
-        code=200, status="ok", message="success", result=_services
+        code=200,
+        status="ok",
+        message="success",
+        result=[
+            {
+                "id": service.id,
+                "name": service.name,
+                "price": format_money(service.price),
+                "raw_material_price": format_money(service.raw_material_price),
+                "service_price_price": format_money(service.service_price_price),
+                "status": service.status,
+                "created_at": service.created_at,
+                "updated_at": service.updated_at,
+            }
+            for service in _services
+        ],
     ).model_dump()
 
 
 @router.get("/{service_id}")
 async def get_service_by_id_route(service_id: uuid.UUID, db: Session = Depends(get_db)):
     _services = get_service_by_id(db, service_id)
+    _services.price = format_money(_services.price)
+    _services.raw_material_price = format_money(_services.raw_material_price)
+    _services.service_price_price = format_money(_services.service_price_price)
     return Response(
         code=200, status="ok", message="success", result=_services
     ).model_dump()

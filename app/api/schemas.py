@@ -25,8 +25,9 @@ class StaffsSchema(BaseModel):
     id: uuid.UUID = None
     name: str = None
     surname: str = None
-    date_birth: datetime = None
     address: str = None
+    login: str | None = None
+    password: str | None = None
     phone_number: str = None
     gender: str = None
     role: str = None
@@ -54,6 +55,7 @@ class ServicesSchema(BaseModel):
     id: uuid.UUID = None
     name: str = None
     price: int = None
+    status: bool = None
     raw_material_price: int = None
     service_price_price: int = None
     created_at: datetime = None

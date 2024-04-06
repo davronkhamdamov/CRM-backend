@@ -14,7 +14,6 @@ def get_user(
 ):
     if skip < 0:
         skip = 0
-    print(order_by)
     if order_by == "descend":
         return (
             db.query(Users).order_by(Users.name.desc()).offset(skip).limit(limit).all()

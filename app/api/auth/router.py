@@ -16,12 +16,12 @@ router = APIRouter()
 async def login(staff: LoginSchema, db: Session = Depends(get_db)):
     _current_staff = get_staff_from_by_login(db=db, login=staff.login)
     if not _current_staff:
-        raise HTTPException(status_code=401, detail="User not found")
+        raise HTTPException(status_code=401, detail="Bunday xodim topilmadi")
     check_password = validate_password(
         hashed_password=_current_staff.password, password=staff.password
     )
     if not check_password:
-        raise HTTPException(status_code=400, detail="Password not valid")
+        raise HTTPException(status_code=400, detail="Parol notog'ri")
     return Response(
         code=200,
         status="ok",

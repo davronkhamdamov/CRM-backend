@@ -32,7 +32,6 @@ def get_payment_by_id(db: Session, payment_id: uuid.UUID):
 
 
 def create_payment(db: Session, payment: PaymentsSchema):
-    print(payment.payment_type_id)
     _payment = Payments(
         amount=payment.amount,
         payment_type_id=payment.payment_type_id,

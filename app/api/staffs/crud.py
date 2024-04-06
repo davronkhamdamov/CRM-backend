@@ -9,9 +9,7 @@ from app.api.models import Staffs
 from app.api.schemas import StaffsSchema
 
 
-def get_staff(
-    db: Session, skip: int = 0, limit: int = 10, current_user: StaffsSchema = None
-):
+def get_staff(db: Session, skip: int = 0, limit: int = 10, current_user: dict = None):
     return (
         db.query(Staffs)
         .filter(Staffs.id != current_user["id"])

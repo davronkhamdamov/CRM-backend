@@ -25,7 +25,7 @@ async def get_staffs_route(
     current_user: dict = Depends(get_current_user),
 ):
     limit = int(req.query_params.get("results") or 10)
-    skip = int(req.query_params.get("page") or 0) - 1
+    skip = int(req.query_params.get("page") or 0)
     _staffs = get_staff(db=db, skip=skip, limit=limit, current_user=current_user)
     _count_of_staffs = count_staffs(db)
     return Response(

@@ -16,7 +16,7 @@ def get_tooth_by_id(db: Session, tooth_id: uuid.UUID):
 
 
 def create_tooth(db: Session, tooth: ToothSchema):
-    _tooth = Tooth(tooth_id=tooth.tooth_id, created_at=datetime.utcnow().isoformat())
+    _tooth = Tooth(tooth_id=tooth.tooth_id, created_at=datetime.now().isoformat())
     db.add(_tooth)
     db.commit()
     db.refresh(_tooth)
@@ -32,7 +32,7 @@ def delete_tooth(db: Session, tooth_id: uuid.UUID):
 def update_tooth(db: Session, tooth: ToothSchema):
     _tooth = get_tooth_by_id(db, tooth.id)
     _tooth.tooth_id = tooth.tooth_id
-    _tooth.updated_at = datetime.utcnow().isoformat()
+    _tooth.updated_at = datetime.now().isoformat()
     db.commit()
     db.refresh(_tooth)
     return _tooth

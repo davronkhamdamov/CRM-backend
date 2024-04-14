@@ -15,6 +15,7 @@ def get_payment(db: Session, skip: int = 0, limit: int = 10):
         .select_from(Users)
         .join(Payments, Users.id == Payments.user_id)
         .join(Payment_type, Payments.payment_type_id == Payment_type.id)
+        .order_by(Payments.created_at.desc())
         .offset(skip)
         .limit(limit)
         .all()
@@ -36,7 +37,7 @@ def create_payment(db: Session, payment: PaymentsSchema):
         amount=payment.amount,
         payment_type_id=payment.payment_type_id,
         user_id=payment.user_id,
-        created_at=datetime.utcnow().isoformat(),
+        created_at=datetime.now().isoformat(),
     )
     db.add(_payment)
     _user = get_user_by_id(db, user_id=payment.user_id)

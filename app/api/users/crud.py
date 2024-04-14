@@ -5,7 +5,7 @@ from typing import Optional
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app.api.models import Users
+from app.api.models import Users, Payments
 from app.api.schemas import UserSchema
 
 
@@ -19,7 +19,9 @@ def get_user(
             db.query(Users).order_by(Users.name.desc()).offset(skip).limit(limit).all()
         )
     elif order_by == "ascend":
-        return db.query(Users).order_by(Users.name).offset(skip).limit(limit).all()
+        return (
+            db.query(Users).order_by(Users.name.asc()).offset(skip).limit(limit).all()
+        )
     return (
         db.query(Users)
         .order_by(Users.created_at.desc())
@@ -45,7 +47,7 @@ def create_user(db: Session, user: UserSchema):
         gender=user.gender,
         date_birth=user.date_birth,
         address=user.address,
-        created_at=datetime.datetime.utcnow().isoformat(),
+        created_at=datetime.datetime.now().isoformat(),
         phone_number=user.phone_number,
     )
     db.add(_user)
@@ -56,6 +58,7 @@ def create_user(db: Session, user: UserSchema):
 
 def delete_user(db: Session, user_id: uuid.UUID):
     db.query(Users).filter(Users.id == user_id).delete()
+    db.query(Payments).filter(Payments.user_id == user_id).delete()
     db.commit()
 
 
@@ -66,7 +69,7 @@ def update_user(db: Session, user: UserSchema):
     _user.job = user.job
     _user.date_birth = user.date_birth
     _user.address = user.address
-    _user.updated_at = datetime.datetime.utcnow().isoformat()
+    _user.updated_at = datetime.datetime.now().isoformat()
     _user.phone_number = user.phone_number
     db.commit()
     db.refresh(_user)

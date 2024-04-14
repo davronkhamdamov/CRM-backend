@@ -22,7 +22,7 @@ def create_service(db: Session, service: ServicesSchema):
         status=service.status,
         raw_material_price=service.raw_material_price,
         service_price_price=service.service_price_price,
-        created_at=datetime.utcnow().isoformat(),
+        created_at=datetime.now().isoformat(),
     )
     db.add(_service)
     db.commit()
@@ -42,7 +42,7 @@ def update_service(db: Session, service: ServicesSchema):
     _service.price = service.price
     _service.raw_material_price = service.raw_material_price
     _service.service_price_price = service.service_price_price
-    _service.updated_at = datetime.utcnow().isoformat()
+    _service.updated_at = datetime.now().isoformat()
     db.commit()
     db.refresh(_service)
     return _service

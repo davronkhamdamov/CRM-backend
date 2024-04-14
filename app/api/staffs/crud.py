@@ -37,7 +37,7 @@ def create_staff(db: Session, staff: StaffsSchema):
         phone_number=staff.phone_number,
         gender=staff.gender,
         role=staff.role,
-        created_at=datetime.utcnow().isoformat(),
+        created_at=datetime.now().isoformat(),
     )
     db.add(_staff)
     db.commit()
@@ -60,7 +60,7 @@ def update_staff(db: Session, staff: StaffsSchema):
     _staff.phone_number = staff.phone_number
     _staff.gender = staff.gender
     _staff.role = staff.role
-    _staff.updated_at = datetime.utcnow().isoformat()
+    _staff.updated_at = datetime.now().isoformat()
     db.commit()
     db.refresh(_staff)
     return _staff

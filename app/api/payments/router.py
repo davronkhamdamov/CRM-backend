@@ -36,7 +36,7 @@ async def get_payment_route(
     _=Depends(get_current_user),
 ):
     limit = int(req.query_params.get("results") or 10)
-    skip = int(req.query_params.get("page") or 0) - 1
+    skip = int(req.query_params.get("page") or 1) - 1
 
     _payment = get_payment(db, skip, limit)
     count_of_payments = count_payments(db)
@@ -49,6 +49,7 @@ async def get_payment_route(
             "surname": user.surname,
             "id": payment.id,
             "user_id": user.id,
+            "created_at": payment.created_at,
         }
         for payment, payment_type, user in _payment
     ]

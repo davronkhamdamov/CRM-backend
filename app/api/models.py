@@ -18,7 +18,7 @@ class Users(Base):
     gender = Column(String, nullable=False)
     job = Column(String, nullable=False)
     balance = Column(Integer, default=0)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.now)
     updated_at = Column(DateTime)
 
 
@@ -34,7 +34,7 @@ class Staffs(Base):
     phone_number = Column(String, nullable=False)
     gender = Column(String, nullable=False)
     role = Column(String, default="doctor")
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.now)
     updated_at = Column(DateTime)
 
 
@@ -45,12 +45,12 @@ class Cure(Base):
     staff_id = Column(UUID)
     service_id = Column(UUID)
     user_id = Column(UUID)
-    is_done = Column(String)
-    start_time = Column(DateTime, default=datetime.datetime.utcnow)
+    is_done = Column(String, default="Kutilmoqda")
+    start_time = Column(DateTime, default=datetime.datetime.now)
     end_time = Column(DateTime, nullable=True)
     img_url = Column(String)
     tooth_id = Column(UUID)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.now)
     updated_at = Column(DateTime)
 
 
@@ -63,7 +63,7 @@ class Services(Base):
     raw_material_price = Column(Integer, nullable=False)
     service_price_price = Column(Integer, nullable=False)
     status = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.now)
     updated_at = Column(DateTime)
 
 
@@ -72,7 +72,7 @@ class Tooth(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4())
     tooth_id = Column(Integer, nullable=False)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.now)
     updated_at = Column(DateTime)
 
 
@@ -83,7 +83,7 @@ class Payments(Base):
     amount = Column(Integer)
     payment_type_id = Column(UUID, ForeignKey("payment_type.id"))
     user_id = Column(UUID, ForeignKey("users.id"))
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.now)
     updated_at = Column(DateTime)
 
 
@@ -92,7 +92,7 @@ class Payment_type(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4())
     method = Column(String)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.now)
     updated_at = Column(DateTime)
 
 

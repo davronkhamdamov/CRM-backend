@@ -1,5 +1,5 @@
 import uuid
-from typing import Optional
+from typing import Optional, List
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
@@ -67,6 +67,7 @@ async def get_cure_by_id_route(
         "staff_surname": _cure[2].surname,
         "created_at": _cure[0].created_at,
     }
+
     return Response(
         code=200, status="ok", message="success", result=result_dict
     ).model_dump()
@@ -104,9 +105,9 @@ async def get_cures_route(
 async def create_cure_route(
     cure: CureSchema,
     db: Session = Depends(get_db),
-    current_staff: dict = Depends(get_current_user),
+    _=Depends(get_current_user),
 ):
-    _cure = create_cure(db, cure, current_staff["id"])
+    _cure = create_cure(db, cure)
     return Response(code=201, status="ok", message="created").model_dump()
 
 
@@ -114,7 +115,7 @@ async def create_cure_route(
 async def delete_cure_route(
     cure_id: uuid.UUID,
     db: Session = Depends(get_db),
-    current_staff: dict = Depends(get_current_user),
+    _=Depends(get_current_user),
 ):
     delete_cure(db, cure_id)
     return Response(code=200, status="ok", message="deleted").model_dump()
@@ -133,8 +134,10 @@ async def update_cure_route(
 @router.put("/update/{cure_id}")
 async def update_cure_route(
     cure_id: uuid.UUID,
+    payload_services: List[uuid.UUID],
+    payload: List[int],
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
 ):
-    end_cure(db, cure_id)
+    end_cure(db, cure_id, payload_services, payload)
     return Response(code=200, status="ok", message="updated").model_dump()

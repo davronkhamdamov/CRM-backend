@@ -44,7 +44,6 @@ class Cure(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     staff_id = Column(UUID, ForeignKey("staffs.id"))
-    cure_service = Column(UUID, ForeignKey("cure_service.id"))
     user_id = Column(UUID, ForeignKey("users.id"))
     is_done = Column(String, default="Kutilmoqda")
     start_time = Column(DateTime, nullable=False)
@@ -60,6 +59,7 @@ class CureService(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     service_id = Column(UUID, ForeignKey("services.id"))
     tooth_id = Column(Integer, nullable=False)
+    cure_id = Column(UUID, ForeignKey("cure.id"))
     created_at = Column(DateTime, default=datetime.datetime.now)
     updated_at = Column(DateTime)
 

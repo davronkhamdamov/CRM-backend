@@ -11,6 +11,7 @@ from app.api.cure.crud import (
     delete_cure,
     get_cure_by_id_for_staff,
     get_cures_for_staff,
+    end_cure,
 )
 from app.api.schemas import Response, CureSchema
 from app.db import get_db
@@ -123,7 +124,17 @@ async def delete_cure_route(
 async def update_cure_route(
     cure: CureSchema,
     db: Session = Depends(get_db),
-    current_staff: dict = Depends(get_current_user),
+    _=Depends(get_current_user),
 ):
     update_cure(db, cure)
+    return Response(code=200, status="ok", message="updated").model_dump()
+
+
+@router.put("/update/{cure_id}")
+async def update_cure_route(
+    cure_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
+    end_cure(db, cure_id)
     return Response(code=200, status="ok", message="updated").model_dump()

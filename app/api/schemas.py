@@ -36,8 +36,6 @@ class StaffsSchema(BaseModel):
 
 
 class CureSchema(BaseModel):
-    __tablename__ = "cure"
-
     id: Optional[uuid.UUID] = None
     staff_id: uuid.UUID = None
     service_id: uuid.UUID = None

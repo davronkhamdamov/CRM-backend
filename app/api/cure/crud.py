@@ -85,3 +85,17 @@ def update_cure(db: Session, cure: CureSchema):
     db.commit()
     db.refresh(_cure)
     return _cure
+
+
+def end_cure(db: Session, cure_id: uuid.UUID):
+    _cure = get_cure_by_id(db, cure_id)
+    # _cure.name = cure.name
+    # _cure.surname = cure.surname
+    # _cure.job = cure.job
+    # _cure.date_birth = cure.date_birth
+    # _cure.address = cure.address
+    # _cure.updated_at = datetime.datetime.now().isoformat()
+    # _cure.phone_number = cure.phone_number
+    # db.commit()
+    # db.refresh(_cure)
+    return _cure

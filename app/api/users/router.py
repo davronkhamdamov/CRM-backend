@@ -38,7 +38,6 @@ async def get_users_route(
 ):
     limit = int(req.query_params.get("results") or 10)
     skip = int(req.query_params.get("page") or 1) - 1
-    print(limit, skip)
     _users = get_user(
         db, limit=limit, skip=skip, order_by=req.query_params.get("order")
     )

@@ -5,7 +5,7 @@ import requests
 from app.api.models import Services, Staffs, Users, Payment_type
 from app.db import db1
 
-url = "https://randomuser.me/api?results=50"
+url = "https://randomuser.me/api?results=5"
 
 users = requests.get(url).json()["results"]
 
@@ -74,7 +74,7 @@ for method in [
     )
     db1.add(_service)
 
-for staff in users[10:]:
+for staff in users[4:]:
     _staff = Staffs(
         name=staff["name"]["first"],
         surname=staff["name"]["last"],

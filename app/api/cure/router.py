@@ -12,10 +12,12 @@ from app.api.cure.crud import (
     get_cure_by_id_for_staff,
     get_cures_for_staff,
     end_cure,
+    get_cure_with_service,
 )
 from app.api.schemas import Response, CureSchema
 from app.db import get_db
 from app.utils.auth_middleware import get_current_user
+from app.utils.money_format import format_money
 
 router = APIRouter()
 
@@ -42,6 +44,28 @@ async def get_cures_for_staff_route(
             "created_at": cure.created_at,
         }
         for cure, staff, user in _cure
+    ]
+    return Response(
+        code=200, status="ok", message="success", result=result_dict
+    ).model_dump()
+
+
+@router.get("/cure-service/{cure_id}")
+async def get_cure_service(
+    cure_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
+    _cure = get_cure_with_service(db, cure_id)
+    result_dict = [
+        {
+            "cure_id": _cure_service.id,
+            "service_name": _service.name,
+            "tooth_id": _cure_service.tooth_id,
+            "price": format_money(_service.price),
+            "created_at": _cure_service.created_at,
+        }
+        for _cure_service, _service in _cure
     ]
     return Response(
         code=200, status="ok", message="success", result=result_dict

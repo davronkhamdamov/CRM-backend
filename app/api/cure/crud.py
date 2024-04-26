@@ -4,7 +4,7 @@ from typing import List
 
 from sqlalchemy.orm import Session
 
-from app.api.models import Cure, Staffs, Users, CureService
+from app.api.models import Cure, Staffs, Users, CureService, Services
 from app.api.schemas import CureSchema
 
 
@@ -17,6 +17,15 @@ def get_cures(db: Session, skip: int = 0, limit: int = 10):
         .offset(skip)
         .limit(limit)
         .order_by(Cure.start_time.desc())
+        .all()
+    )
+
+
+def get_cure_with_service(db: Session, cure_id: uuid.UUID):
+    return (
+        db.query(CureService, Services)
+        .join(CureService, CureService.service_id == Services.id)
+        .filter(CureService.cure_id == cure_id)
         .all()
     )
 

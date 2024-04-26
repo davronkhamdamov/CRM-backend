@@ -9,9 +9,11 @@ from app.api.payments.router import router as payment_router
 from app.api.services.router import router as service_router
 from app.api.staffs.router import router as staffs_router
 from app.api.users.router import router as user_router
-from app.utils.initialize import user
 
-print(user)
+# from app.utils.initialize import user
+#
+# print(user)
+
 app = FastAPI()
 
 app.add_middleware(

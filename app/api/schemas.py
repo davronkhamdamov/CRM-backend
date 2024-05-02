@@ -45,6 +45,8 @@ class CureSchema(BaseModel):
     end_time: str = None
     img_url: str = None
     tooth_id: str = None
+    price: Optional[int] = None
+    payed_price: Optional[int] = None
     created_at: datetime = None
     updated_at: Optional[datetime] = None
 
@@ -53,9 +55,15 @@ class ServicesSchema(BaseModel):
     id: uuid.UUID = None
     name: str = None
     price: int = None
+    service_category_id: uuid.UUID
     status: bool = None
-    raw_material_price: int = None
-    service_price_price: int = None
+    created_at: datetime = None
+    updated_at: Optional[datetime] = None
+
+
+class ServicesCategorySchema(BaseModel):
+    id: uuid.UUID = None
+    name: str = None
     created_at: datetime = None
     updated_at: Optional[datetime] = None
 
@@ -95,3 +103,9 @@ class Response(BaseModel, Generic[T]):
 class LoginSchema(BaseModel):
     login: str
     password: str
+
+
+class updateCure(BaseModel, Generic[T]):
+    payload_services: Optional[T] = None
+    is_done: Optional[str] = None
+    price: Optional[int] = None

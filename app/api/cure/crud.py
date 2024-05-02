@@ -1,11 +1,11 @@
 import datetime
 import uuid
-from typing import List
 
 from sqlalchemy.orm import Session
 
-from app.api.models import Cure, Staffs, Users, CureService, Services
-from app.api.schemas import CureSchema
+from app.api.models import Cure, Staffs, Users, CureService, Services, Payments
+from app.api.schemas import CureSchema, updateCure, PaymentsSchema
+from app.api.users.crud import get_user_by_id
 
 
 def get_cures(db: Session, skip: int = 0, limit: int = 10):
@@ -100,18 +100,47 @@ def update_cure(db: Session, cure: CureSchema):
 def end_cure(
     db: Session,
     cure_id: uuid.UUID,
-    payload_services: List[uuid.UUID],
-    payload: List[int],
+    cure: updateCure,
+    is_done: str,
 ):
     _cure = get_cure_by_id(db, cure_id)
-    for tooth_id in payload:
-        for service_id in payload_services:
+    for tooth in cure.payload_services:
+        for services in tooth["services"]:
             _cure_service = CureService(
-                service_id=service_id, tooth_id=tooth_id, cure_id=_cure.id
+                service_id=services, tooth_id=tooth["id"], cure_id=_cure.id
             )
             db.add(_cure_service)
     _cure.updated_at = datetime.datetime.now()
-    _cure.is_done = "Yakunlandi"
+    _cure.price = cure.price
+    _cure.is_done = is_done
+    db.commit()
+    db.refresh(_cure)
+    return _cure
+
+
+def pay_with_balance_cure(db: Session, cure_id: uuid.UUID, cure: updateCure):
+    _cure = get_cure_by_id(db, cure_id)
+    _user = get_user_by_id(db, _cure.user_id)
+    _user.balance -= cure.price
+    _cure.updated_at = datetime.datetime.now()
+    _cure.payed_price += cure.price
+    db.commit()
+    db.refresh(_cure)
+    return _cure
+
+
+def pay_with_cash_cure(db: Session, cure_id: uuid.UUID, payment: PaymentsSchema):
+    _cure = get_cure_by_id(db, cure_id)
+    _user = get_user_by_id(db, _cure.user_id)
+    _payment = Payments(
+        amount=payment.amount,
+        payment_type_id=payment.payment_type_id,
+        user_id=_user.id,
+        created_at=datetime.datetime.now().isoformat(),
+    )
+    db.add(_payment)
+    _cure.payed_price += payment.amount
+    _cure.updated_at = datetime.datetime.now()
     db.commit()
     db.refresh(_cure)
     return _cure

@@ -49,6 +49,17 @@ async def get_me(
     ).model_dump()
 
 
+@router.get("/count")
+async def get_me(
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
+    _count_of_staffs = count_staffs(db)
+    return Response(
+        code=200, status="ok", message="success", result=_count_of_staffs
+    ).model_dump()
+
+
 @router.get("/{staff_id}")
 async def get_staff_by_id_route(
     staff_id: uuid.UUID,

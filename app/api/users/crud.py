@@ -35,6 +35,10 @@ def count_users(db: Session):
     return db.query(func.count(Users.id)).scalar()
 
 
+def qarz_user_count(db: Session):
+    return db.query(Users).filter(Users.balance < 0).count()
+
+
 def get_user_by_id(db: Session, user_id: uuid.UUID):
     return db.query(Users).filter(Users.id == user_id).first()
 

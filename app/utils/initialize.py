@@ -69,8 +69,6 @@ for method in [
     _service = Services(
         name=method["name"],
         price=method["price"],
-        raw_material_price=method["raw_material_price"],
-        service_price_price=method["service_price_price"],
     )
     db1.add(_service)
 

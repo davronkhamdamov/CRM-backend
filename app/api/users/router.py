@@ -11,12 +11,35 @@ from app.api.users.crud import (
     delete_user,
     update_user,
     count_users,
+    qarz_user_count,
 )
 from app.db import get_db
 from app.utils.auth_middleware import get_current_user
 from app.utils.money_format import format_money
 
 router = APIRouter()
+
+
+@router.get("/count")
+async def get_user_by_id_route(
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
+    _users = count_users(db)
+    return Response(
+        code=200, status="ok", message="success", result=_users
+    ).model_dump()
+
+
+@router.get("/qarz-count")
+async def get_user_by_id_route(
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
+    _users = qarz_user_count(db)
+    return Response(
+        code=200, status="ok", message="success", result=_users
+    ).model_dump()
 
 
 @router.get("/{user_id}")

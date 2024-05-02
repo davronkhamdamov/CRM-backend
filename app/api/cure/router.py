@@ -1,5 +1,5 @@
 import uuid
-from typing import Optional, List
+from typing import Optional
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
@@ -13,8 +13,10 @@ from app.api.cure.crud import (
     get_cures_for_staff,
     end_cure,
     get_cure_with_service,
+    pay_with_balance_cure,
+    pay_with_cash_cure,
 )
-from app.api.schemas import Response, CureSchema
+from app.api.schemas import Response, CureSchema, updateCure, PaymentsSchema
 from app.db import get_db
 from app.utils.auth_middleware import get_current_user
 from app.utils.money_format import format_money
@@ -38,6 +40,8 @@ async def get_cures_for_staff_route(
             "user_surname": user.surname,
             "is_done": cure.is_done,
             "start_time": cure.start_time,
+            "price": cure.price,
+            "payed_price": cure.payed_price,
             "end_time": cure.end_time,
             "staff_name": staff.name,
             "staff_surname": staff.surname,
@@ -87,6 +91,8 @@ async def get_cure_by_id_route(
         "is_done": _cure[0].is_done,
         "start_time": _cure[0].start_time,
         "end_time": _cure[0].end_time,
+        "price": _cure[0].price,
+        "payed_price": _cure[0].payed_price,
         "staff_name": _cure[2].name,
         "staff_surname": _cure[2].surname,
         "created_at": _cure[0].created_at,
@@ -114,6 +120,8 @@ async def get_cures_route(
             "is_done": cure.is_done,
             "start_time": cure.start_time,
             "end_time": cure.end_time,
+            "price": cure.price,
+            "payed_price": cure.payed_price,
             "staff_name": staff.name,
             "staff_surname": staff.surname,
             "created_at": cure.created_at,
@@ -158,10 +166,36 @@ async def update_cure_route(
 @router.put("/update/{cure_id}")
 async def update_cure_route(
     cure_id: uuid.UUID,
-    payload_services: List[uuid.UUID],
-    payload: List[int],
+    cure: updateCure,
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
 ):
-    end_cure(db, cure_id, payload_services, payload)
+    end_cure(
+        db=db,
+        cure_id=cure_id,
+        cure=cure,
+        is_done=cure.is_done,
+    )
+    return Response(code=200, status="ok", message="updated").model_dump()
+
+
+@router.put("/pay-balance/{cure_id}")
+async def update_cure_route(
+    cure_id: uuid.UUID,
+    cure: updateCure,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
+    pay_with_balance_cure(db=db, cure_id=cure_id, cure=cure)
+    return Response(code=200, status="ok", message="updated").model_dump()
+
+
+@router.put("/pay/{cure_id}")
+async def update_cure_route(
+    cure_id: uuid.UUID,
+    payment: PaymentsSchema,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
+    pay_with_cash_cure(db=db, cure_id=cure_id, payment=payment)
     return Response(code=200, status="ok", message="updated").model_dump()

@@ -18,6 +18,7 @@ class Users(Base):
     phone_number = Column(String, nullable=False)
     gender = Column(String, nullable=False)
     job = Column(String, nullable=False)
+    description = Column(String, nullable=True)
     balance = Column(Integer, default=0)
     created_at = Column(DateTime, default=datetime.datetime.now)
     updated_at = Column(DateTime)
@@ -49,6 +50,8 @@ class Cure(Base):
     start_time = Column(DateTime, nullable=False)
     end_time = Column(DateTime, nullable=False)
     img_url = Column(String)
+    price = Column(Integer, default=0)
+    payed_price = Column(Integer, default=0)
     created_at = Column(DateTime, default=datetime.datetime.now)
     updated_at = Column(DateTime)
 
@@ -70,9 +73,17 @@ class Services(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, nullable=False)
     price = Column(Integer, nullable=False)
-    raw_material_price = Column(Integer, nullable=False)
-    service_price_price = Column(Integer, nullable=False)
+    service_category_id = Column(UUID, ForeignKey("services_category.id"))
     status = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.datetime.now)
+    updated_at = Column(DateTime)
+
+
+class ServicesCategory(Base):
+    __tablename__ = "services_category"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.now)
     updated_at = Column(DateTime)
 

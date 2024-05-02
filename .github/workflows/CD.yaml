@@ -12,15 +12,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Deploy using ssh
-      uses: appleboy/ssh-action@master
-      with:
-       host: ${{ secrets.HOST }}
-       username: ${{ secrets.USERNAME }}
-       key: ${{ secrets.SSH_PRIVATE_KEY }}
-       port: ${{ secrets.SSH_PORT }}
-       script: |
-         cd ~/CRM-backend
-         git pull
-         pip install -r requirements.txt
-         kill $(ps aux | grep '[u]vicorn app.main:app' | awk '{print $2}') && nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+      - name: Deploy using ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ~/CRM-backend
+            git pull
+            pip install -r requirements.txt
+            kill $(ps aux | grep '[u]vicorn app.main:app' | awk '{print $2}') && ./run.sh

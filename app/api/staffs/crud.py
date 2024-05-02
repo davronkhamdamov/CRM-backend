@@ -78,6 +78,7 @@ def update_staff(db: Session, staff: StaffsSchema):
     _staff.address = staff.address
     _staff.phone_number = staff.phone_number
     _staff.gender = staff.gender
+    _staff.login = staff.login
     _staff.role = staff.role
     if staff.password:
         _staff.password = hashlib.sha256(staff.password.encode()).hexdigest()

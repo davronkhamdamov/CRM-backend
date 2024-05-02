@@ -51,6 +51,7 @@ def create_user(db: Session, user: UserSchema):
         gender=user.gender,
         date_birth=user.date_birth,
         address=user.address,
+        description=user.description,
         created_at=datetime.datetime.now().isoformat(),
         phone_number=user.phone_number,
     )

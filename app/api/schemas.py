@@ -16,6 +16,7 @@ class UserSchema(BaseModel):
     phone_number: str = None
     gender: str = None
     job: str = None
+    description: Optional[str] = None
     balance: Optional[int] = None
     created_at: datetime = None
     updated_at: Optional[datetime] = None

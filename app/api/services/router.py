@@ -1,7 +1,7 @@
 import uuid
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.orm import Session
 
 from app.api.schemas import Response, ServicesSchema
@@ -54,12 +54,18 @@ async def get_services_route(
 
 @router.get("/")
 async def get_services_route(
-    skip: Optional[int] = None,
-    limit: Optional[int] = Query(None, gt=9, lt=101),
+    req: Request,
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
 ):
-    _services = get_service(db, skip, limit)
+    limit = int(req.query_params.get("results") or 10)
+    skip = int(req.query_params.get("page") or 1) - 1
+    _services = get_service(
+        db,
+        skip,
+        limit,
+        search=req.query_params.get("search"),
+    )
     return Response(
         code=200,
         status="ok",
@@ -78,7 +84,6 @@ async def get_services_route(
             for service, services_category in _services
         ],
     ).model_dump()
-
 
 
 @router.get("/count")

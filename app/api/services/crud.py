@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from typing import Optional
 
 from sqlalchemy.orm import Session
 
@@ -7,14 +8,20 @@ from app.api.models import Services, ServicesCategory
 from app.api.schemas import ServicesSchema
 
 
-def get_service(db: Session, skip: int = 0, limit: int = 10):
-    return (
-        db.query(Services, ServicesCategory)
-        .join(Services, Services.service_category_id == ServicesCategory.id)
-        .offset(skip)
-        .limit(limit)
-        .all()
+def get_service(
+    db: Session, skip: int = 0, limit: int = 10, search: Optional[str] = None
+):
+    if skip < 0:
+        skip = 0
+
+    query = db.query(Services, ServicesCategory).join(
+        Services, Services.service_category_id == ServicesCategory.id
     )
+    if search:
+        search = f"%{search}%"
+        query = query.filter(Services.name.ilike(search))
+
+    return query.offset(skip).limit(limit).all()
 
 
 def get_service_by_id(db: Session, service_id: uuid.UUID):

@@ -1,22 +1,42 @@
 import hashlib
 import uuid
 from datetime import datetime
+from typing import Optional
 
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
 from app.api.models import Staffs
 from app.api.schemas import StaffsSchema
 
 
-def get_staff(db: Session, skip: int = 0, limit: int = 10, current_user: dict = None):
-    return (
-        db.query(Staffs)
-        .filter(Staffs.id != current_user["id"])
-        .offset(skip)
-        .limit(limit)
-        .all()
-    )
+def get_staff(
+    db: Session,
+    skip: int = 0,
+    limit: int = 10,
+    current_user: dict = None,
+    order_by=Optional[str],
+    search: Optional[str] = None,
+):
+    if skip < 0:
+        skip = 0
+
+    query = db.query(Staffs)
+
+    if search:
+        search = f"%{search}%"
+        query = query.filter(
+            or_(Staffs.name.ilike(search), Staffs.surname.ilike(search))
+        )
+
+    if order_by == "descend":
+        query = query.order_by(Staffs.name.desc())
+    elif order_by == "ascend":
+        query = query.order_by(Staffs.name.asc())
+    else:
+        query = query.order_by(Staffs.created_at.desc())
+
+    return query.filter(Staffs.id != current_user["id"]).offset(skip).limit(limit).all()
 
 
 def count_staffs(db: Session):

@@ -38,7 +38,12 @@ async def get_payment_route(
     limit = int(req.query_params.get("results") or 10)
     skip = int(req.query_params.get("page") or 1) - 1
 
-    _payment = get_payment(db, skip, limit)
+    _payment = get_payment(
+        db,
+        skip,
+        limit,
+        search=req.query_params.get("search"),
+    )
     count_of_payments = count_payments(db)
     results_dict = [
         {

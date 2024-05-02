@@ -2,7 +2,7 @@ import datetime
 import uuid
 from typing import Optional
 
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
 from app.api.models import Users, Payments
@@ -10,25 +10,28 @@ from app.api.schemas import UserSchema
 
 
 def get_user(
-    db: Session, skip: int = 0, limit: int = 10, order_by: Optional[str] = None
+    db: Session,
+    skip: int = 0,
+    limit: int = 10,
+    order_by: Optional[str] = None,
+    search: Optional[str] = None,
 ):
     if skip < 0:
         skip = 0
+
+    query = db.query(Users)
+    if search:
+        search = f"%{search}%"
+        query = query.filter(or_(Users.name.ilike(search), Users.surname.ilike(search)))
+
     if order_by == "descend":
-        return (
-            db.query(Users).order_by(Users.name.desc()).offset(skip).limit(limit).all()
-        )
+        query = query.order_by(Users.name.desc())
     elif order_by == "ascend":
-        return (
-            db.query(Users).order_by(Users.name.asc()).offset(skip).limit(limit).all()
-        )
-    return (
-        db.query(Users)
-        .order_by(Users.created_at.desc())
-        .offset(skip)
-        .limit(limit)
-        .all()
-    )
+        query = query.order_by(Users.name.asc())
+    else:
+        query = query.order_by(Users.created_at.desc())
+
+    return query.offset(skip).limit(limit).all()
 
 
 def count_users(db: Session):
@@ -74,6 +77,7 @@ def update_user(db: Session, user: UserSchema):
     _user.job = user.job
     _user.date_birth = user.date_birth
     _user.address = user.address
+    _user.description = user.description
     _user.updated_at = datetime.datetime.now().isoformat()
     _user.phone_number = user.phone_number
     db.commit()

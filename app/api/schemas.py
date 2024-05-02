@@ -17,7 +17,7 @@ class UserSchema(BaseModel):
     gender: str = None
     job: str = None
     description: Optional[str] = None
-    balance: Optional[int] = None
+    balance: Optional[str] = None
     created_at: datetime = None
     updated_at: Optional[datetime] = None
 

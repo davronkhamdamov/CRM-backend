@@ -44,6 +44,7 @@ async def get_cures_for_staff_route(
             "payed_price": cure.payed_price,
             "end_time": cure.end_time,
             "staff_name": staff.name,
+            "description": staff.description,
             "staff_surname": staff.surname,
             "created_at": cure.created_at,
         }
@@ -93,6 +94,7 @@ async def get_cure_by_id_route(
         "end_time": _cure[0].end_time,
         "price": _cure[0].price,
         "payed_price": _cure[0].payed_price,
+        "description": _cure[1].description,
         "staff_name": _cure[2].name,
         "staff_surname": _cure[2].surname,
         "created_at": _cure[0].created_at,

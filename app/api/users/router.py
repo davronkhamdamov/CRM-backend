@@ -62,7 +62,11 @@ async def get_users_route(
     limit = int(req.query_params.get("results") or 10)
     skip = int(req.query_params.get("page") or 1) - 1
     _users = get_user(
-        db, limit=limit, skip=skip, order_by=req.query_params.get("order")
+        db,
+        limit=limit,
+        skip=skip,
+        order_by=req.query_params.get("order"),
+        search=req.query_params.get("search"),
     )
     _count_of_users = count_users(db)
 
@@ -80,8 +84,8 @@ async def get_users_route(
                 "phone_number": user.phone_number,
                 "gender": user.gender,
                 "job": user.job,
+                "description": user.description,
                 "balance": format_money(user.balance),
-                "address": user.address,
                 "created_at": user.created_at,
                 "updated_at": user.updated_at,
             }

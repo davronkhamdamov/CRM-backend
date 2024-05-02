@@ -1,7 +1,8 @@
 import uuid
 from datetime import datetime
+from typing import Optional
 
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
 from app.api.models import Payments, Payment_type, Users
@@ -9,19 +10,25 @@ from app.api.schemas import PaymentsSchema
 from app.api.users.crud import get_user_by_id
 
 
-def get_payment(db: Session, skip: int = 0, limit: int = 10):
-    _payment = (
+def get_payment(
+    db: Session,
+    skip: int = 0,
+    limit: int = 10,
+    search: Optional[str] = None,
+):
+    if skip < 0:
+        skip = 0
+    query = (
         db.query(Payments, Payment_type, Users)
         .select_from(Users)
         .join(Payments, Users.id == Payments.user_id)
         .join(Payment_type, Payments.payment_type_id == Payment_type.id)
-        .order_by(Payments.created_at.desc())
-        .offset(skip)
-        .limit(limit)
-        .all()
     )
+    if search:
+        search = f"%{search}%"
+        query = query.filter(or_(Users.name.ilike(search), Users.surname.ilike(search)))
 
-    return _payment
+    return query.order_by(Payments.created_at.desc()).offset(skip).limit(limit).all()
 
 
 def count_payments(db: Session):

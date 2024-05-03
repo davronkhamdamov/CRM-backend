@@ -15,6 +15,8 @@ from app.api.cure.crud import (
     get_cure_with_service,
     pay_with_balance_cure,
     pay_with_cash_cure,
+    get_cures_for_patient,
+    get_cures_for_staff_by_id,
 )
 from app.api.schemas import Response, CureSchema, updateCure, PaymentsSchema
 from app.db import get_db
@@ -44,7 +46,71 @@ async def get_cures_for_staff_route(
             "payed_price": cure.payed_price,
             "end_time": cure.end_time,
             "staff_name": staff.name,
-            "description": staff.description,
+            "description": user.description,
+            "staff_surname": staff.surname,
+            "created_at": cure.created_at,
+        }
+        for cure, staff, user in _cure
+    ]
+    return Response(
+        code=200, status="ok", message="success", result=result_dict
+    ).model_dump()
+
+
+@router.get("/for-staff/{staff_id}")
+async def get_cures_for_staff_route(
+    skip: Optional[int] = None,
+    limit: Optional[int] = Query(None, gt=9, lt=101),
+    db: Session = Depends(get_db),
+    staff_id: uuid.UUID = None,
+    _=Depends(get_current_user),
+):
+    _cure = get_cures_for_staff_by_id(db, staff_id, skip, limit)
+    result_dict = [
+        {
+            "cure_id": cure.id,
+            "user_id": user.id,
+            "user_name": user.name,
+            "user_surname": user.surname,
+            "is_done": cure.is_done,
+            "start_time": cure.start_time,
+            "price": cure.price,
+            "payed_price": cure.payed_price,
+            "end_time": cure.end_time,
+            "staff_name": staff.name,
+            "description": user.description,
+            "staff_surname": staff.surname,
+            "created_at": cure.created_at,
+        }
+        for cure, staff, user in _cure
+    ]
+    return Response(
+        code=200, status="ok", message="success", result=result_dict
+    ).model_dump()
+
+
+@router.get("/for-patient/{patient_id}")
+async def get_cures_for_staff_route(
+    skip: Optional[int] = None,
+    limit: Optional[int] = Query(None, gt=9, lt=101),
+    db: Session = Depends(get_db),
+    patient_id: uuid.UUID = None,
+    _=Depends(get_current_user),
+):
+    _cure = get_cures_for_patient(db, patient_id, skip, limit)
+    result_dict = [
+        {
+            "cure_id": cure.id,
+            "user_id": user.id,
+            "user_name": user.name,
+            "user_surname": user.surname,
+            "is_done": cure.is_done,
+            "start_time": cure.start_time,
+            "price": cure.price,
+            "payed_price": cure.payed_price,
+            "end_time": cure.end_time,
+            "staff_name": staff.name,
+            "description": user.description,
             "staff_surname": staff.surname,
             "created_at": cure.created_at,
         }

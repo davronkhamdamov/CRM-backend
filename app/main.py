@@ -15,7 +15,7 @@ from app.api.users.router import router as user_router
 #
 # print(user)
 
-app = FastAPI()
+app = FastAPI(docs_url=None, redoc_url=None)
 
 app.add_middleware(
     CORSMiddleware,

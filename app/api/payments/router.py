@@ -10,6 +10,7 @@ from app.api.payments.crud import (
     delete_payment,
     update_payment,
     count_payments,
+    get_payment_for_patient,
 )
 from app.api.schemas import Response, PaymentsSchema
 from app.db import get_db
@@ -26,6 +27,42 @@ async def get_payment_by_id_route(
     _payment = get_payment_by_id(db, payment_id)
     return Response(
         code=200, status="ok", message="success", result=_payment
+    ).model_dump()
+
+
+@router.get("/for-patient/{patient_id}")
+async def get_payment_route(
+    req: Request,
+    patient_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
+    limit = int(req.query_params.get("results") or 10)
+    skip = int(req.query_params.get("page") or 1) - 1
+
+    _payment = get_payment_for_patient(db, skip, limit, patient_id)
+    count_of_payments = count_payments(db)
+    results_dict = [
+        {
+            "amount": format_money(payment.amount),
+            "payment_type_id": payment.payment_type_id,
+            "method": payment_type.method,
+            "username": user.name,
+            "surname": user.surname,
+            "id": payment.id,
+            "user_id": user.id,
+            "created_at": payment.created_at,
+        }
+        for payment, payment_type, user in _payment
+    ]
+
+    return Response(
+        code=200,
+        status="ok",
+        message="success",
+        result=results_dict,
+        total=count_of_payments,
+        info={"result": limit, "page": skip},
     ).model_dump()
 
 

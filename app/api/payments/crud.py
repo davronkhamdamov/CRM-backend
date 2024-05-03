@@ -31,6 +31,29 @@ def get_payment(
     return query.order_by(Payments.created_at.desc()).offset(skip).limit(limit).all()
 
 
+def get_payment_for_patient(
+    db: Session,
+    skip: int = 0,
+    limit: int = 10,
+    patient_id: uuid.UUID = None,
+):
+    if skip < 0:
+        skip = 0
+    query = (
+        db.query(Payments, Payment_type, Users)
+        .select_from(Users)
+        .join(Payments, Users.id == Payments.user_id)
+        .join(Payment_type, Payments.payment_type_id == Payment_type.id)
+    )
+    return (
+        query.filter(Payments.user_id == patient_id)
+        .order_by(Payments.created_at.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+
 def count_payments(db: Session):
     return db.query(func.count(Payments.id)).scalar()
 

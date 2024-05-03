@@ -79,9 +79,29 @@ def update_staff(db: Session, staff: StaffsSchema):
     _staff.phone_number = staff.phone_number
     _staff.gender = staff.gender
     _staff.login = staff.login
-    _staff.role = staff.role
     if staff.password:
         _staff.password = hashlib.sha256(staff.password.encode()).hexdigest()
+    if staff.role:
+        _staff.role = staff.role
+    _staff.updated_at = datetime.now().isoformat()
+    db.commit()
+    db.refresh(_staff)
+    return _staff
+
+
+def update_me(db: Session, staff: StaffsSchema, staff_id: uuid.UUID):
+    _staff = get_staff_by_id(db, staff_id)
+    _staff.name = staff.name
+    _staff.surname = staff.surname
+    _staff.address = staff.address
+    _staff.phone_number = staff.phone_number
+    _staff.gender = staff.gender
+    if staff.login:
+        _staff.login = staff.login
+    if staff.password:
+        _staff.password = hashlib.sha256(staff.password.encode()).hexdigest()
+    if staff.role:
+        _staff.role = staff.role
     _staff.updated_at = datetime.now().isoformat()
     db.commit()
     db.refresh(_staff)

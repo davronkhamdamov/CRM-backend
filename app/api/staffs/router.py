@@ -11,6 +11,7 @@ from app.api.staffs.crud import (
     delete_staff,
     update_staff,
     count_staffs,
+    update_me,
 )
 from app.db import get_db
 from app.utils.auth_middleware import get_current_user
@@ -97,6 +98,16 @@ async def delete_staff_route(
 ):
     _staffs = delete_staff(db, staff_id)
     return Response(code=200, status="ok", message="deleted").model_dump()
+
+
+@router.put("/update-me")
+async def update_staff_route(
+    staff: StaffsSchema,
+    db: Session = Depends(get_db),
+    current_staff: dict = Depends(get_current_user),
+):
+    _staffs = update_me(db, staff, current_staff["id"])
+    return Response(code=201, status="ok", message="updated").model_dump()
 
 
 @router.put("/")

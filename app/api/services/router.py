@@ -105,8 +105,6 @@ async def get_service_by_id_route(
 ):
     _services = get_service_by_id(db, service_id)
     _services.price = format_money(_services.price)
-    _services.raw_material_price = format_money(_services.raw_material_price)
-    _services.service_price_price = format_money(_services.service_price_price)
     return Response(
         code=200, status="ok", message="success", result=_services
     ).model_dump()
@@ -134,13 +132,14 @@ async def delete_service_route(
     return Response(code=200, status="ok", message="deleted").model_dump()
 
 
-@router.put("/")
+@router.put("/{service_id}")
 async def update_service_route(
     service: ServicesSchema,
+    service_id: uuid.UUID,
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
 ):
-    _service = update_service(db, service)
+    _service = update_service(db, service, service_id)
     return Response(
         code=201, status="ok", message="updated", result=_service
     ).model_dump()

@@ -52,12 +52,11 @@ def delete_service(db: Session, service_id: uuid.UUID):
     db.commit()
 
 
-def update_service(db: Session, service: ServicesSchema):
-    _service = get_service_by_id(db, service.id)
+def update_service(db: Session, service: ServicesSchema, service_id: uuid.UUID):
+    _service = get_service_by_id(db, service_id)
     _service.name = service.name
     _service.price = service.price
-    _service.raw_material_price = service.raw_material_price
-    _service.service_price_price = service.service_price_price
+    _service.status = service.status
     _service.updated_at = datetime.now().isoformat()
     db.commit()
     db.refresh(_service)

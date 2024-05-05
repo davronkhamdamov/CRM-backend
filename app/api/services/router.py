@@ -66,6 +66,7 @@ async def get_services_route(
         limit,
         search=req.query_params.get("search"),
     )
+    _count_of_services = get_service_count(db)
     return Response(
         code=200,
         status="ok",
@@ -83,6 +84,8 @@ async def get_services_route(
             }
             for service, services_category in _services
         ],
+        total=_count_of_services,
+        info={"result": limit, "page": skip},
     ).model_dump()
 
 

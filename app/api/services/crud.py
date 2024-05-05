@@ -24,6 +24,14 @@ def get_service(
     return query.offset(skip * limit).limit(limit).all()
 
 
+def get_service_for_category(db: Session):
+    return (
+        db.query(Services, ServicesCategory)
+        .join(Services, Services.service_category_id == ServicesCategory.id)
+        .all()
+    )
+
+
 def get_service_by_id(db: Session, service_id: uuid.UUID):
     return db.query(Services).filter(Services.id == service_id).first()
 

@@ -21,13 +21,10 @@ router = APIRouter()
 
 @router.get("/by-category")
 async def get_services_route(
-    req: Request,
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
 ):
-    limit = int(req.query_params.get("results") or 10)
-    skip = int(req.query_params.get("page") or 1) - 1
-    _services = get_service(db, skip, limit)
+    _services = get_service(db)
     result = []
     for _, category in _services:
         _category = {

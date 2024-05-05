@@ -29,7 +29,7 @@ async def get_services_route(
     skip = int(req.query_params.get("page") or 1) - 1
     _services = get_service(db, skip, limit)
     result = []
-    for _service, category in _services:
+    for _, category in _services:
         _category = {
             "id": category.id,
             "name": category.name,
@@ -37,9 +37,11 @@ async def get_services_route(
             "updated_at": category.updated_at,
             "services": [],
         }
+
         if _category not in result:
             result.append(_category)
 
+    for _service, _ in _services:
         for i, e in enumerate(result):
             if e["id"] == _service.service_category_id:
                 result[i]["services"].append(_service)

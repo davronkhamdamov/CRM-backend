@@ -1,7 +1,6 @@
 import uuid
-from typing import Optional
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
 from app.api.payment_type.crud import (
@@ -32,11 +31,12 @@ async def get_payment_type_by_id_route(
 
 @router.get("/")
 async def get_payment_type_route(
-    skip: Optional[int] = None,
-    limit: Optional[int] = Query(None, gt=9, lt=101),
+    req: Request,
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
 ):
+    limit = int(req.query_params.get("results") or 10)
+    skip = int(req.query_params.get("page") or 1) - 1
     _payment_type = get_payment_type(db, skip, limit)
     return Response(
         code=200, status="ok", message="success", result=_payment_type

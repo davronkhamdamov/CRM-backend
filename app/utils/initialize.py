@@ -2,7 +2,7 @@ import hashlib
 
 import requests
 
-from app.api.models import Services, Staffs, Users, Payment_type
+from app.api.models import Staffs, Users
 from app.db import db1
 
 url = "https://randomuser.me/api?results=5"
@@ -47,30 +47,28 @@ _staff_r = Staffs(
 db1.add(_staff)
 db1.add(_staff_r)
 
-
-for method in ["Naqt", "Karta"]:
-    _payment_type = Payment_type(method=method)
-    db1.add(_payment_type)
-
-for method in [
-    {
-        "name": "Olib tashlash",
-        "price": 30000,
-        "raw_material_price": 0,
-        "service_price_price": 30000,
-    },
-    {
-        "name": "Plomba",
-        "price": 20000,
-        "raw_material_price": 30000,
-        "service_price_price": 50000,
-    },
-]:
-    _service = Services(
-        name=method["name"],
-        price=method["price"],
-    )
-    db1.add(_service)
+#
+# for method in ["Naqt", "Karta"]:
+#     _payment_type = Payment_type(method=method)
+#     db1.add(_payment_type)
+#
+# for method in [
+#     {
+#         "name": "Chiska",
+#         "price": 20000,
+#     },
+#     {
+#         "name": "Plomba",
+#         "price": 20000,
+#         "raw_material_price": 30000,
+#         "service_price_price": 50000,
+#     },
+# ]:
+#     _service = Services(
+#         name=method["name"],
+#         price=method["price"],
+#     )
+#     db1.add(_service)
 
 for staff in users[4:]:
     _staff = Staffs(

@@ -28,7 +28,12 @@ def get_payment(
         search = f"%{search}%"
         query = query.filter(or_(Users.name.ilike(search), Users.surname.ilike(search)))
 
-    return query.order_by(Payments.created_at.desc()).offset(skip).limit(limit).all()
+    return (
+        query.order_by(Payments.created_at.desc())
+        .offset(skip * limit)
+        .limit(limit)
+        .all()
+    )
 
 
 def get_payment_for_patient(
@@ -48,7 +53,7 @@ def get_payment_for_patient(
     return (
         query.filter(Payments.user_id == patient_id)
         .order_by(Payments.created_at.desc())
-        .offset(skip)
+        .offset(skip * limit)
         .limit(limit)
         .all()
     )

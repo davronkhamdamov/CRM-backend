@@ -21,7 +21,7 @@ def get_service(
         search = f"%{search}%"
         query = query.filter(Services.name.ilike(search))
 
-    return query.offset(skip).limit(limit).all()
+    return query.offset(skip * limit).limit(limit).all()
 
 
 def get_service_by_id(db: Session, service_id: uuid.UUID):

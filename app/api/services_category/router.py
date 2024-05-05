@@ -1,7 +1,6 @@
 import uuid
-from typing import Optional
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
 from app.api.schemas import Response, ServicesCategorySchema
@@ -20,11 +19,12 @@ router = APIRouter()
 
 @router.get("/")
 async def get_services_category_route(
-    skip: Optional[int] = None,
-    limit: Optional[int] = Query(None, gt=9, lt=101),
+    req: Request,
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
 ):
+    limit = int(req.query_params.get("results") or 10)
+    skip = int(req.query_params.get("page") or 1) - 1
     _services = get_service_category(db, skip, limit)
     return Response(
         code=200,

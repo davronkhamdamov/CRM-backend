@@ -8,7 +8,7 @@ from app.api.schemas import ServicesCategorySchema
 
 
 def get_service_category(db: Session, skip: int = 0, limit: int = 10):
-    return db.query(ServicesCategory).offset(skip).limit(limit).all()
+    return db.query(ServicesCategory).offset(skip * limit).limit(limit).all()
 
 
 def get_service_category_by_id(db: Session, service_id: uuid.UUID):

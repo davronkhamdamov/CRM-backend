@@ -8,7 +8,7 @@ from app.api.schemas import PaymentTypeSchema
 
 
 def get_payment_type(db: Session, skip: int = 0, limit: int = 10):
-    return db.query(Payment_type).offset(skip).limit(limit).all()
+    return db.query(Payment_type).offset(skip * limit).limit(limit).all()
 
 
 def get_payment_type_by_id(db: Session, payment_type_id: uuid.UUID):

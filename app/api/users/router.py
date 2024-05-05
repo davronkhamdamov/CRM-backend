@@ -137,9 +137,12 @@ async def delete_user_route(
     ).model_dump()
 
 
-@router.put("/")
+@router.put("/{user_id}")
 async def update_user_route(
-    user: UserSchema, db: Session = Depends(get_db), _=Depends(get_current_user)
+    user_id: uuid.UUID,
+    user: UserSchema,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
 ):
-    _user = update_user(db, user)
+    _user = update_user(db, user, user_id)
     return Response(code=200, status="ok", message="updated", result=_user).model_dump()

@@ -16,6 +16,11 @@ class UserSchema(BaseModel):
     phone_number: str = None
     gender: str = None
     job: str = None
+    prikus: Optional[str] = None
+    disease_progression: Optional[str] = None
+    objective_check: Optional[str] = None
+    milk: Optional[str] = None
+    placental_diseases: Optional[str] = None
     description: Optional[str] = None
     balance: Optional[str] = None
     created_at: datetime = None

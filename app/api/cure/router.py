@@ -1,7 +1,6 @@
 import uuid
-from typing import Optional
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
 from app.api.cure.crud import (
@@ -28,11 +27,12 @@ router = APIRouter()
 
 @router.get("/for-staff")
 async def get_cures_for_staff_route(
-    skip: Optional[int] = None,
-    limit: Optional[int] = Query(None, gt=9, lt=101),
+    req: Request,
     db: Session = Depends(get_db),
     current_staff: dict = Depends(get_current_user),
 ):
+    limit = int(req.query_params.get("results") or 10)
+    skip = int(req.query_params.get("page") or 1) - 1
     _cure = get_cures_for_staff(db, current_staff["id"], skip, limit)
     result_dict = [
         {
@@ -59,12 +59,13 @@ async def get_cures_for_staff_route(
 
 @router.get("/for-staff/{staff_id}")
 async def get_cures_for_staff_route(
-    skip: Optional[int] = None,
-    limit: Optional[int] = Query(None, gt=9, lt=101),
+    req: Request,
     db: Session = Depends(get_db),
     staff_id: uuid.UUID = None,
     _=Depends(get_current_user),
 ):
+    limit = int(req.query_params.get("results") or 10)
+    skip = int(req.query_params.get("page") or 1) - 1
     _cure = get_cures_for_staff_by_id(db, staff_id, skip, limit)
     result_dict = [
         {
@@ -91,12 +92,13 @@ async def get_cures_for_staff_route(
 
 @router.get("/for-patient/{patient_id}")
 async def get_cures_for_staff_route(
-    skip: Optional[int] = None,
-    limit: Optional[int] = Query(None, gt=9, lt=101),
+    req: Request,
     db: Session = Depends(get_db),
     patient_id: uuid.UUID = None,
     _=Depends(get_current_user),
 ):
+    limit = int(req.query_params.get("results") or 10)
+    skip = int(req.query_params.get("page") or 1) - 1
     _cure = get_cures_for_patient(db, patient_id, skip, limit)
     result_dict = [
         {
@@ -161,6 +163,11 @@ async def get_cure_by_id_route(
         "price": _cure[0].price,
         "payed_price": _cure[0].payed_price,
         "description": _cure[1].description,
+        "prikus": _cure[1].prikus,
+        "disease_progression": _cure[1].disease_progression,
+        "objective_check": _cure[1].objective_check,
+        "milk": _cure[1].milk,
+        "placental_diseases": _cure[1].placental_diseases,
         "staff_name": _cure[2].name,
         "staff_surname": _cure[2].surname,
         "created_at": _cure[0].created_at,
@@ -173,11 +180,12 @@ async def get_cure_by_id_route(
 
 @router.get("/")
 async def get_cures_route(
-    skip: Optional[int] = None,
-    limit: Optional[int] = Query(None, gt=9, lt=101),
+    req: Request,
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
 ):
+    limit = int(req.query_params.get("results") or 10)
+    skip = int(req.query_params.get("page") or 1) - 1
     _cure = get_cures(db, skip, limit)
     result_dict = [
         {

@@ -36,7 +36,12 @@ def get_staff(
     else:
         query = query.order_by(Staffs.created_at.desc())
 
-    return query.filter(Staffs.id != current_user["id"]).offset(skip).limit(limit).all()
+    return (
+        query.filter(Staffs.id != current_user["id"])
+        .offset(skip * limit)
+        .limit(limit)
+        .all()
+    )
 
 
 def count_staffs(db: Session):

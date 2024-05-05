@@ -11,6 +11,7 @@ from app.api.services.crud import (
     delete_service,
     update_service,
     get_service_count,
+    get_service_for_category,
 )
 from app.db import get_db
 from app.utils.auth_middleware import get_current_user
@@ -24,7 +25,7 @@ async def get_services_route(
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
 ):
-    _services = get_service(db)
+    _services = get_service_for_category(db)
     result = []
     for _, category in _services:
         _category = {

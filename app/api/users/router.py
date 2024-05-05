@@ -42,6 +42,23 @@ async def get_user_by_id_route(
     ).model_dump()
 
 
+@router.get("/statistic_by_address")
+async def get_user_by_id_route(
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
+    _users = get_user(db)
+    address_users = {}
+    for user in _users:
+        if user.address in address_users:
+            address_users[user.address] += 1
+        else:
+            address_users[user.address] = 1
+    return Response(
+        code=200, status="ok", message="success", result=address_users
+    ).model_dump()
+
+
 @router.get("/{user_id}")
 async def get_user_by_id_route(
     user_id: uuid.UUID,

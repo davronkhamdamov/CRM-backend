@@ -25,7 +25,9 @@ async def get_payment_type_by_id_route(
     _=Depends(get_current_user),
 ):
     _payment_type = get_payment_type_by_id(db, payment_type_id)
-    return Response(code=200, status="ok", message="success", result=_payment_type)
+    return Response(
+        code=200, status="ok", message="success", result=_payment_type
+    ).model_dump()
 
 
 @router.get("/")

@@ -71,9 +71,9 @@ def get_cures_for_patient(
         .join(Users, Cure.user_id == Users.id)
         .join(Staffs, Cure.staff_id == Staffs.id)
         .filter(Cure.user_id == patient_id)
+        .order_by(Cure.start_time.desc())
         .offset(skip * limit)
         .limit(limit)
-        .order_by(Cure.start_time.desc())
         .all()
     )
 

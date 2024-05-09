@@ -6,7 +6,7 @@ from typing import Optional
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
-from app.api.models import Staffs
+from app.api.models import Staffs, Cure, CureService
 from app.api.schemas import StaffsSchema
 
 
@@ -42,6 +42,42 @@ def get_staff(
         .limit(limit)
         .all()
     )
+
+
+def get_all_staffs(
+    db: Session,
+    skip: int = 0,
+    limit: int = 10,
+    staff_id: Optional[uuid.UUID] = None,
+):
+    if skip < 0:
+        skip = 0
+    query = db.query(Staffs).filter(Staffs.role == "doctor")
+
+    if staff_id and staff_id != "undefined":
+        query = query.filter(Staffs.id == staff_id)
+
+    return query.offset(skip * limit).limit(limit).all()
+
+
+def get_all_staff(db: Session):
+    return db.query(Staffs).all()
+
+
+def get_cures_for_salary(
+    db: Session,
+    filter_staff: Optional[uuid.UUID] = None,
+):
+
+    query = db.query(Cure).filter(Cure.is_done == "Yakunlandi")
+
+    if filter_staff and filter_staff != "undefined":
+        query = query.filter(Staffs.id == filter_staff)
+    return query.all()
+
+
+def get_cure_services_for_salary(db: Session):
+    return db.query(CureService).all()
 
 
 def count_staffs(db: Session):

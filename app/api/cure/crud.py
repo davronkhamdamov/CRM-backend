@@ -39,7 +39,8 @@ def get_cures_for_staff(
         .join(Users, Cure.user_id == Users.id)
         .join(Staffs, Cure.staff_id == Staffs.id)
         .filter(Cure.staff_id == current_staff_id)
-        .order_by(Cure.start_time.desc())
+        .order_by(Cure.is_done.asc())
+        .order_by(Cure.start_time.asc())
         .offset(skip * limit)
         .limit(limit)
         .all()
@@ -54,10 +55,10 @@ def get_cures_for_staff_by_id(
         .select_from(Cure)
         .join(Users, Cure.user_id == Users.id)
         .join(Staffs, Cure.staff_id == Staffs.id)
+        .order_by(Cure.start_time.desc())
         .filter(Cure.staff_id == staff_id)
         .offset(skip * limit)
         .limit(limit)
-        .order_by(Cure.start_time.desc())
         .all()
     )
 
@@ -95,6 +96,7 @@ def get_cure_by_id(db: Session, cure_id: uuid.UUID):
 
 
 def create_cure(db: Session, cure: CureSchema):
+    print(cure.start_time)
     _cure = Cure(
         staff_id=cure.staff_id,
         user_id=cure.user_id,

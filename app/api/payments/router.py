@@ -15,7 +15,6 @@ from app.api.payments.crud import (
 from app.api.schemas import Response, PaymentsSchema
 from app.db import get_db
 from app.utils.auth_middleware import get_current_user
-from app.utils.money_format import format_money
 
 router = APIRouter()
 
@@ -44,7 +43,7 @@ async def get_payment_route(
     count_of_payments = count_payments(db)
     results_dict = [
         {
-            "amount": format_money(payment.amount),
+            "amount": payment.amount,
             "payment_type_id": payment.payment_type_id,
             "method": payment_type.method,
             "username": user.name,
@@ -84,7 +83,7 @@ async def get_payment_route(
     count_of_payments = count_payments(db)
     results_dict = [
         {
-            "amount": format_money(payment.amount),
+            "amount": payment.amount,
             "payment_type_id": payment.payment_type_id,
             "method": payment_type.method,
             "username": user.name,

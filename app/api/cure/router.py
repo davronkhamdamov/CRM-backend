@@ -20,7 +20,6 @@ from app.api.cure.crud import (
 from app.api.schemas import Response, CureSchema, updateCure, PaymentsSchema
 from app.db import get_db
 from app.utils.auth_middleware import get_current_user
-from app.utils.money_format import format_money
 
 router = APIRouter()
 
@@ -135,7 +134,7 @@ async def get_cure_service(
             "cure_id": _cure_service.id,
             "service_name": _service.name,
             "tooth_id": _cure_service.tooth_id,
-            "price": format_money(_service.price),
+            "price": _service.price,
             "created_at": _cure_service.created_at,
         }
         for _cure_service, _service in _cure

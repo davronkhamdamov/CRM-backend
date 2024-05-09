@@ -15,7 +15,6 @@ from app.api.services.crud import (
 )
 from app.db import get_db
 from app.utils.auth_middleware import get_current_user
-from app.utils.money_format import format_money
 
 router = APIRouter()
 
@@ -75,7 +74,7 @@ async def get_services_route(
             {
                 "id": service.id,
                 "name": service.name,
-                "price": format_money(service.price),
+                "price": service.price,
                 "category_id": services_category.id,
                 "category_name": services_category.name,
                 "status": service.status,
@@ -107,7 +106,6 @@ async def get_service_by_id_route(
     _=Depends(get_current_user),
 ):
     _services = get_service_by_id(db, service_id)
-    _services.price = format_money(_services.price)
     return Response(
         code=200, status="ok", message="success", result=_services
     ).model_dump()

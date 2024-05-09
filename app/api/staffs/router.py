@@ -1,9 +1,11 @@
 import uuid
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
 from app.api.schemas import Response, StaffsSchema
+from app.api.services.crud import get_service_by_id
 from app.api.staffs.crud import (
     get_staff,
     get_staff_by_id,
@@ -12,6 +14,10 @@ from app.api.staffs.crud import (
     update_staff,
     count_staffs,
     update_me,
+    get_all_staffs,
+    get_cures_for_salary,
+    get_cure_services_for_salary,
+    get_all_staff,
 )
 from app.db import get_db
 from app.utils.auth_middleware import get_current_user
@@ -41,6 +47,90 @@ async def get_staffs_route(
         status="ok",
         message="success",
         result=_staffs,
+        total=_count_of_staffs,
+        info={"result": limit, "page": skip},
+    ).model_dump()
+
+
+@router.get("/all")
+async def get_staffs_route(
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
+    _staffs = _staffs = get_all_staff(db)
+    _count_of_staffs = count_staffs(db)
+    return Response(
+        code=200,
+        status="ok",
+        message="success",
+        result=_staffs,
+        total=_count_of_staffs,
+    ).model_dump()
+
+
+def date_components(date1):
+    return date1.year, date1.month, date1.day
+
+
+@router.get("/salary")
+async def get_staffs_salary_route(
+    req: Request,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
+    limit = int(req.query_params.get("results") or 10)
+    skip = int(req.query_params.get("page") or 1) - 1
+    filter_staff = req.query_params.get("filter-staff")
+    cures_for_salary = get_cures_for_salary(db=db, filter_staff=filter_staff)
+    services_for_salary = get_cure_services_for_salary(db=db)
+    _cures = []
+
+    iso_start_datetime = datetime.fromisoformat(
+        req.query_params.get("start-date").replace("Z", "+00:00")
+    )
+    iso_end_datetime = datetime.fromisoformat(
+        req.query_params.get("end-date").replace("Z", "+00:00")
+    )
+
+    for result in cures_for_salary:
+        if (
+            date_components(iso_start_datetime)
+            <= date_components(result.start_time)
+            <= date_components(iso_end_datetime)
+        ):
+            _cures.append(result)
+
+    _staffs = get_all_staffs(db, skip, limit, staff_id=filter_staff)
+    staffs = []
+    for staff in _staffs:
+        _staff = {
+            "id": staff.id,
+            "name": staff.name,
+            "surname": staff.surname,
+            "cures": [],
+            "salary": 0,
+        }
+
+        if _staff not in staffs:
+            staffs.append(_staff)
+
+    for cure in _cures:
+        for i, staff in enumerate(staffs):
+            if cure.staff_id == staff["id"]:
+                staffs[i]["cures"].append(cure)
+                for service in services_for_salary:
+                    if service.cure_id == cure.id:
+                        staffs[i]["salary"] += int(
+                            get_service_by_id(db, service.service_id).price
+                        )
+
+    _count_of_staffs = count_staffs(db)
+
+    return Response(
+        code=200,
+        status="ok",
+        message="success",
+        result=staffs,
         total=_count_of_staffs,
         info={"result": limit, "page": skip},
     ).model_dump()

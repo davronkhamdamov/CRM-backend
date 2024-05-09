@@ -15,7 +15,6 @@ from app.api.users.crud import (
 )
 from app.db import get_db
 from app.utils.auth_middleware import get_current_user
-from app.utils.money_format import format_money
 
 router = APIRouter()
 
@@ -66,7 +65,6 @@ async def get_user_by_id_route(
     _=Depends(get_current_user),
 ):
     _user = get_user_by_id(db, user_id)
-    _user.balance = format_money(_user.balance)
     return Response(code=200, status="ok", message="success", result=_user).model_dump()
 
 
@@ -102,7 +100,7 @@ async def get_users_route(
                 "gender": user.gender,
                 "job": user.job,
                 "description": user.description,
-                "balance": format_money(user.balance),
+                "balance": user.balance,
                 "created_at": user.created_at,
                 "updated_at": user.updated_at,
             }

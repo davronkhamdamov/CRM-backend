@@ -1,6 +1,7 @@
 import datetime
 import uuid
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.api.models import Cure, Staffs, Users, CureService, Services, Payments
@@ -110,6 +111,10 @@ def create_cure(db: Session, cure: CureSchema):
     db.commit()
     db.refresh(_cure)
     return _cure
+
+
+def count_cure_for_staff(db: Session, staff_id: uuid.UUID):
+    return db.query(func.count(Cure.id)).filter(Cure.staff_id == staff_id).scalar()
 
 
 def delete_cure(db: Session, cure_id: uuid.UUID):

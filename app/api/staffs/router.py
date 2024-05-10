@@ -76,7 +76,7 @@ def date_components(date1):
 async def get_staffs_salary_route(
     req: Request,
     db: Session = Depends(get_db),
-    _=Depends(get_current_user),
+    current_staff: dict = Depends(get_current_user),
 ):
     limit = int(req.query_params.get("results") or 10)
     skip = int(req.query_params.get("page") or 1) - 1
@@ -101,6 +101,8 @@ async def get_staffs_salary_route(
             _cures.append(result)
 
     _staffs = get_all_staffs(db, skip, limit, staff_id=filter_staff)
+    if current_staff["role"] != "admin":
+        _staffs = get_all_staffs(db, skip, limit, staff_id=current_staff["id"])
     staffs = []
     for staff in _staffs:
         _staff = {
@@ -131,6 +133,7 @@ async def get_staffs_salary_route(
         status="ok",
         message="success",
         result=staffs,
+        role=current_staff["role"],
         total=_count_of_staffs,
         info={"result": limit, "page": skip},
     ).model_dump()

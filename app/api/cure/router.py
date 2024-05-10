@@ -53,6 +53,7 @@ async def get_cures_for_staff_route(
         }
         for cure, staff, user in _cure
     ]
+
     return Response(
         code=200, status="ok", message="success", result=result_dict
     ).model_dump()
@@ -183,13 +184,14 @@ async def get_cure_by_id_route(
 async def get_cures_route(
     req: Request,
     db: Session = Depends(get_db),
-    _=Depends(get_current_user),
+    current_user: dict = Depends(get_current_user),
 ):
     limit = int(req.query_params.get("results") or 10)
     skip = int(req.query_params.get("page") or 1) - 1
     staff = req.query_params.get("filter-staff")
     _cure = get_cures(db, skip, limit, staff)
-
+    if current_user["role"] != "admin":
+        _cure = get_cures(db, skip, limit, current_user["id"])
     result_dict = []
     start_time = req.query_params.get("start-date")
     end_time = req.query_params.get("end-date")

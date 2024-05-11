@@ -9,7 +9,7 @@ from app.api.schemas import CureSchema, updateCure, PaymentsSchema
 from app.api.users.crud import get_user_by_id
 
 
-def get_cures(db: Session, skip: int = 0, limit: int = 10, staff_id: uuid.UUID = None):
+def get_cures(db: Session, staff_id: uuid.UUID = None):
     query = (
         db.query(Cure, Staffs, Users)
         .select_from(Cure)
@@ -18,9 +18,7 @@ def get_cures(db: Session, skip: int = 0, limit: int = 10, staff_id: uuid.UUID =
     )
     if staff_id != "undefined" and staff_id:
         query = query.filter(Staffs.id == staff_id)
-    return (
-        query.order_by(Cure.start_time.desc()).offset(skip * limit).limit(limit).all()
-    )
+    return query.order_by(Cure.start_time.desc()).all()
 
 
 def get_cure_with_service(db: Session, cure_id: uuid.UUID):

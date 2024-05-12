@@ -69,7 +69,7 @@ def get_cures_for_salary(
     filter_staff: Optional[uuid.UUID] = None,
 ):
 
-    query = db.query(Cure).filter(Cure.is_done == "Yakunlandi")
+    query = db.query(Cure).filter(Cure.is_done == "Yakunlandi").filter(Cure.payed_price == Cure.price)
 
     if filter_staff and filter_staff != "undefined":
         query = query.filter(Staffs.id == filter_staff)

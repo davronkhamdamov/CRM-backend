@@ -3,7 +3,7 @@ import uuid
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
-from app.api.schemas import Response, UserSchema
+from app.api.schemas import Response, UserSchema, Prikus
 from app.api.users.crud import (
     get_user,
     get_user_by_id,
@@ -12,6 +12,7 @@ from app.api.users.crud import (
     update_user,
     count_users,
     qarz_user_count,
+    update_user_prikus,
 )
 from app.db import get_db
 from app.utils.auth_middleware import get_current_user
@@ -143,4 +144,15 @@ async def update_user_route(
     _=Depends(get_current_user),
 ):
     _user = update_user(db, user, user_id)
+    return Response(code=200, status="ok", message="updated", result=_user).model_dump()
+
+
+@router.put("/prikus/{user_id}")
+async def update_user_route(
+    user_id: uuid.UUID,
+    prikus: Prikus,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
+    _user = update_user_prikus(db, prikus.prikus, user_id)
     return Response(code=200, status="ok", message="updated", result=_user).model_dump()

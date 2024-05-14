@@ -135,6 +135,15 @@ def update_cure(db: Session, cure: CureSchema):
     return _cure
 
 
+def update_cure_status(db: Session, cure: str, cure_id: uuid.UUID):
+    _cure = get_cure_by_id(db, cure_id)
+    _cure.is_done = cure
+    _cure.updated_at = (datetime.datetime.now().isoformat(),)
+    db.commit()
+    db.refresh(_cure)
+    return _cure
+
+
 def end_cure(
     db: Session,
     cure_id: uuid.UUID,

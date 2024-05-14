@@ -17,8 +17,9 @@ from app.api.cure.crud import (
     pay_with_cash_cure,
     get_cures_for_patient,
     get_cures_for_staff_by_id,
+    update_cure_status,
 )
-from app.api.schemas import Response, CureSchema, updateCure, PaymentsSchema
+from app.api.schemas import Response, CureSchema, updateCure, PaymentsSchema, Status
 from app.api.staffs.router import date_components
 from app.db import get_db
 from app.utils.auth_middleware import get_current_user
@@ -273,6 +274,17 @@ async def update_cure_route(
     _=Depends(get_current_user),
 ):
     update_cure(db, cure)
+    return Response(code=200, status="ok", message="updated").model_dump()
+
+
+@router.put("/status/{cure_id}")
+async def update_cure_route(
+    cure_id: uuid.UUID,
+    cure: Status,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
+    update_cure_status(db, cure.status, cure_id)
     return Response(code=200, status="ok", message="updated").model_dump()
 
 

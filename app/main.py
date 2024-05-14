@@ -10,10 +10,9 @@ from app.api.services.router import router as service_router
 from app.api.services_category.router import router as services_category
 from app.api.staffs.router import router as staffs_router
 from app.api.users.router import router as user_router
+from app.utils.initialize import admin
 
-# from app.utils.initialize import user
-#
-# print(user)
+admin
 
 app = FastAPI(docs_url=None, redoc_url=None)
 

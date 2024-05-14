@@ -91,6 +91,16 @@ def update_user(db: Session, user: UserSchema, user_id: uuid.UUID):
     _user.objective_check = user.objective_check
     _user.milk = user.milk
     _user.placental_diseases = user.placental_diseases
+    _user.updated_at = datetime.datetime.now()
+    db.commit()
+    db.refresh(_user)
+    return _user
+
+
+def update_user_prikus(db: Session, prikus: str, user_id: uuid.UUID):
+    _user = get_user_by_id(db=db, user_id=user_id)
+    _user.prikus = prikus
+    _user.updated_at = datetime.datetime.now()
     db.commit()
     db.refresh(_user)
     return _user

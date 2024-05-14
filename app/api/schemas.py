@@ -116,3 +116,11 @@ class updateCure(BaseModel, Generic[T]):
     payload_services: Optional[T] = None
     is_done: Optional[str] = None
     price: Optional[int] = None
+
+
+class Prikus(BaseModel):
+    prikus: str
+
+
+class Status(BaseModel):
+    status: str

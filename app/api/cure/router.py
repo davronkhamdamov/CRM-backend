@@ -189,7 +189,7 @@ async def get_cures_route(
 ):
     staff = req.query_params.get("filter-staff")
     _cure = get_cures(db, staff)
-    if current_user["role"] != "admin":
+    if current_user["role"] != "admin" or current_user["role"] != "reception":
         _cure = get_cures(db, current_user["id"])
     result_dict = []
     start_time = req.query_params.get("start-date")

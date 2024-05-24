@@ -104,3 +104,12 @@ def update_user_prikus(db: Session, prikus: str, user_id: uuid.UUID):
     db.commit()
     db.refresh(_user)
     return _user
+
+
+def update_user_image(db: Session, img_url: str, user_id: uuid.UUID):
+    _user = get_user_by_id(db=db, user_id=user_id)
+    _user.img_url = img_url
+    _user.updated_at = datetime.datetime.now()
+    db.commit()
+    db.refresh(_user)
+    return _user

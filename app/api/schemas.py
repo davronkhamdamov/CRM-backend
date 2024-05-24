@@ -124,3 +124,7 @@ class Prikus(BaseModel):
 
 class Status(BaseModel):
     status: str
+
+
+class UserImage(BaseModel):
+    image_url: str

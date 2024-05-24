@@ -151,3 +151,12 @@ def update_me(db: Session, staff: StaffsSchema, staff_id: uuid.UUID):
     db.commit()
     db.refresh(_staff)
     return _staff
+
+
+def update_staff_image(db: Session, staff_image_url: str, staff_id: uuid.UUID):
+    _staff = get_staff_by_id(db, staff_id)
+    _staff.img_url = staff_image_url
+    _staff.updated_at = datetime.now().isoformat()
+    db.commit()
+    db.refresh(_staff)
+    return _staff

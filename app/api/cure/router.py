@@ -18,6 +18,7 @@ from app.api.cure.crud import (
     get_cures_for_patient,
     get_cures_for_staff_by_id,
     update_cure_status,
+    get_cures_for_staff_count,
 )
 from app.api.schemas import Response, CureSchema, updateCure, PaymentsSchema, Status
 from app.api.staffs.router import date_components
@@ -36,6 +37,7 @@ async def get_cures_for_staff_route(
     limit = int(req.query_params.get("results") or 10)
     skip = int(req.query_params.get("page") or 1) - 1
     _cure = get_cures_for_staff(db, current_staff["id"], skip, limit)
+    _cure_count = get_cures_for_staff_count(db, current_staff["id"], skip, limit)
     result_dict = [
         {
             "cure_id": cure.id,
@@ -56,7 +58,7 @@ async def get_cures_for_staff_route(
     ]
 
     return Response(
-        code=200, status="ok", message="success", result=result_dict
+        code=200, status="ok", message="success", result=result_dict, total=_cure_count
     ).model_dump()
 
 

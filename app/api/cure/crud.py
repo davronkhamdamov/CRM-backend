@@ -47,6 +47,21 @@ def get_cures_for_staff(
     )
 
 
+def get_cures_for_staff_count(
+    db: Session, current_staff_id: uuid.UUID, skip: int = 0, limit: int = 10
+):
+    return (
+        db.query(Cure, Staffs, Users)
+        .select_from(Cure)
+        .join(Users, Cure.user_id == Users.id)
+        .join(Staffs, Cure.staff_id == Staffs.id)
+        .filter(Cure.staff_id == current_staff_id)
+        .order_by(Cure.is_done.asc())
+        .order_by(Cure.start_time.asc())
+        .count()
+    )
+
+
 def get_cures_for_staff_by_id(
     db: Session, staff_id: uuid.UUID, skip: int = 0, limit: int = 10
 ):

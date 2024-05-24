@@ -4,7 +4,7 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
-from app.api.schemas import Response, StaffsSchema
+from app.api.schemas import Response, StaffsSchema, UserImage
 from app.api.services.crud import get_service_by_id
 from app.api.staffs.crud import (
     get_staff,
@@ -18,6 +18,7 @@ from app.api.staffs.crud import (
     get_cures_for_salary,
     get_cure_services_for_salary,
     get_all_staff,
+    update_staff_image,
 )
 from app.db import get_db
 from app.utils.auth_middleware import get_current_user
@@ -210,4 +211,15 @@ async def update_staff_route(
     _=Depends(get_current_user),
 ):
     _staffs = update_staff(db, staff)
+    return Response(code=201, status="ok", message="updated").model_dump()
+
+
+@router.put("/image/{staff_id}")
+async def update_staff_route(
+    staff_id: uuid.UUID,
+    staff_image: UserImage,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
+    _staffs = update_staff_image(db, staff_image.image_url, staff_id)
     return Response(code=201, status="ok", message="updated").model_dump()

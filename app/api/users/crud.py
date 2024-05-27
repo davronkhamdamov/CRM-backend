@@ -5,7 +5,7 @@ from typing import Optional
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
-from app.api.models import Users, Payments
+from app.api.models import Users, Payments, Cure, CureService
 from app.api.schemas import UserSchema
 
 
@@ -70,8 +70,13 @@ def create_user(db: Session, user: UserSchema):
 
 
 def delete_user(db: Session, user_id: uuid.UUID):
-    db.query(Users).filter(Users.id == user_id).delete()
     db.query(Payments).filter(Payments.user_id == user_id).delete()
+    user_cures = db.query(Cure).filter(Cure.user_id == user_id).all()
+    for cure in user_cures:
+        db.query(CureService).filter(CureService.cure_id == cure.id).delete()
+
+    db.query(Cure).filter(Cure.user_id == user_id).delete()
+    db.query(Users).filter(Users.id == user_id).delete()
     db.commit()
 
 

@@ -100,6 +100,7 @@ def get_cure_by_id_for_staff(
     return (
         db.query(Cure, Users, Staffs)
         .select_from(Cure)
+        .join(Users, Cure.user_id == Users.id)
         .filter(cure_id == Cure.id)
         .join(Staffs, Staffs.id == current_staff_id)
         .first()

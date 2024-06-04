@@ -19,12 +19,11 @@ def get_user(
 ):
     if skip < 0:
         skip = 0
-
     query = db.query(Users)
     if search:
         search = f"%{search}%"
         query = query.filter(or_(Users.name.ilike(search), Users.surname.ilike(search)))
-    if debt:
+    if debt == "true":
         query = query.filter(Users.balance < 0)
 
     if order_by == "descend":

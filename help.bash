@@ -1,2 +1,5 @@
-docker run --name my_postgres -e POSTGRES_PASSWORD=mysecretpassword -v pgdata:/var/lib/postgresql/data -d postgres
+#bin/bash
 
+sudo docker build -t crm .
+sudo docker tag crm prousername/crm
+sudo docker push prousername/crm

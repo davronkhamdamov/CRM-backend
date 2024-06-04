@@ -2,17 +2,14 @@ version: '3.8'
 
 services:
   web:
-    build: .
+    image: prousername/crm:latest
     ports:
       - "8000:8000"
     command: sh -c "uvicorn app.main:app --reload --port=8000 --host=0.0.0.0"
-    env_file:
-      - ./app/.env
     volumes:
       - ./app:/app
     depends_on:
       - db
-
   db:
     image: postgres
     environment:
@@ -21,5 +18,13 @@ services:
       POSTGRES_DB: crm
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  crm-front:
+    image: prousername/crm-front:tagname
+    ports:
+      - "3000:80"
+    depends_on:
+      - web
+
 volumes:
   postgres_data:

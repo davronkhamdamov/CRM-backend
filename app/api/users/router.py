@@ -84,6 +84,7 @@ async def get_users_route(
         skip=skip,
         order_by=req.query_params.get("order"),
         search=req.query_params.get("search"),
+        debt=req.query_params.get("debt"),
     )
     _count_of_users = count_users(db)
 

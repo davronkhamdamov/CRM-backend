@@ -15,6 +15,7 @@ def get_user(
     limit: int = 10,
     order_by: Optional[str] = None,
     search: Optional[str] = None,
+    debt: Optional[str] = None,
 ):
     if skip < 0:
         skip = 0
@@ -23,6 +24,8 @@ def get_user(
     if search:
         search = f"%{search}%"
         query = query.filter(or_(Users.name.ilike(search), Users.surname.ilike(search)))
+    if debt:
+        query = query.filter(Users.balance < 0)
 
     if order_by == "descend":
         query = query.order_by(Users.name.desc())

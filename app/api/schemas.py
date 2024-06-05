@@ -36,6 +36,7 @@ class StaffsSchema(BaseModel):
     password: Optional[str] = None
     phone_number: str = None
     gender: str = None
+    color: str = None
     role: str = None
     created_at: datetime = None
     updated_at: Optional[datetime] = None
@@ -128,3 +129,7 @@ class Status(BaseModel):
 
 class UserImage(BaseModel):
     image_url: str
+
+
+class UserColor(BaseModel):
+    color: str

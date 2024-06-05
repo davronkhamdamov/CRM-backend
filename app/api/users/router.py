@@ -78,16 +78,20 @@ async def get_users_route(
 ):
     limit = int(req.query_params.get("results") or 10)
     skip = int(req.query_params.get("page") or 1) - 1
+    debt = req.query_params.get("debt")
     _users = get_user(
         db,
         limit=limit,
         skip=skip,
         order_by=req.query_params.get("order"),
         search=req.query_params.get("search"),
-        debt=req.query_params.get("debt"),
+        debt=debt,
     )
-    _count_of_users = count_users(db)
-
+    _count_of_users = []
+    if debt == "true":
+        _count_of_users = qarz_user_count(db)
+    else:
+        _count_of_users = count_users(db)
     return Response(
         code=200,
         status="ok",

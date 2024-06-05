@@ -160,3 +160,12 @@ def update_staff_image(db: Session, staff_image_url: str, staff_id: uuid.UUID):
     db.commit()
     db.refresh(_staff)
     return _staff
+
+
+def update_staff_color(db: Session, staff_color: str, staff_id: uuid.UUID):
+    _staff = get_staff_by_id(db, staff_id)
+    _staff.color = staff_color
+    _staff.updated_at = datetime.now().isoformat()
+    db.commit()
+    db.refresh(_staff)
+    return _staff

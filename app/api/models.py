@@ -41,6 +41,7 @@ class Staffs(Base):
     phone_number = Column(String, nullable=False)
     gender = Column(String, nullable=False)
     role = Column(String, default="doctor")
+    color = Column(String, nullable=True)
     img_url = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.now)
     updated_at = Column(DateTime)

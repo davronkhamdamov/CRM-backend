@@ -111,6 +111,7 @@ async def get_staffs_salary_route(
             "id": staff.id,
             "name": staff.name,
             "surname": staff.surname,
+            "foiz": staff.foiz,
             "cures": [],
             "salary": 0,
         }

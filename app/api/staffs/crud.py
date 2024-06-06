@@ -103,6 +103,7 @@ def create_staff(db: Session, staff: StaffsSchema):
         gender=staff.gender,
         role=staff.role,
         created_at=datetime.now().isoformat(),
+        foiz=staff.foiz,
     )
     db.add(_staff)
     db.commit()
@@ -124,6 +125,7 @@ def update_staff(db: Session, staff: StaffsSchema):
     _staff.phone_number = staff.phone_number
     _staff.gender = staff.gender
     _staff.login = staff.login
+    _staff.foiz = staff.foiz
     if staff.password:
         _staff.password = hashlib.sha256(staff.password.encode()).hexdigest()
     if staff.role:

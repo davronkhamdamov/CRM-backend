@@ -42,6 +42,7 @@ class Staffs(Base):
     gender = Column(String, nullable=False)
     role = Column(String, default="doctor")
     color = Column(String, nullable=True)
+    foiz = Column(Integer, nullable=False)
     img_url = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.now)
     updated_at = Column(DateTime)

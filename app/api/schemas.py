@@ -38,6 +38,7 @@ class StaffsSchema(BaseModel):
     gender: str = None
     color: str = None
     role: str = None
+    foiz: int = None
     created_at: datetime = None
     updated_at: Optional[datetime] = None
 

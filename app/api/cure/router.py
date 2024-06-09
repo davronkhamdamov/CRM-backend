@@ -134,17 +134,32 @@ async def get_cure_service(
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
 ):
+
     _cure = get_cure_with_service(db, cure_id)
-    result_dict = [
-        {
-            "cure_id": _cure_service.id,
-            "service_name": _service.name,
-            "tooth_id": _cure_service.tooth_id,
-            "price": _service.price,
-            "created_at": _cure_service.created_at,
-        }
-        for _cure_service, _service in _cure
-    ]
+    result_dict = []
+    for _cure_service, _service in _cure:
+        print(_cure_service.service_name)
+        if _cure_service.service_name and _cure_service.service_price:
+            result_dict.append(
+                {
+                    "cure_id": _cure_service.id,
+                    "service_name": _cure_service.service_name,
+                    "tooth_id": _cure_service.tooth_id,
+                    "price": _cure_service.service_price,
+                    "created_at": _cure_service.created_at,
+                }
+            )
+        else:
+            result_dict.append(
+                {
+                    "cure_id": _cure_service.id,
+                    "service_name": _service.name,
+                    "tooth_id": _cure_service.tooth_id,
+                    "price": _service.price,
+                    "created_at": _cure_service.created_at,
+                }
+            )
+
     return Response(
         code=200, status="ok", message="success", result=result_dict
     ).model_dump()

@@ -169,8 +169,13 @@ def end_cure(
     _cure = get_cure_by_id(db, cure_id)
     for tooth in cure.payload_services:
         for services in tooth["services"]:
+            service = db.query(Services).filter(Services.id == services).first()
             _cure_service = CureService(
-                service_id=services, tooth_id=tooth["id"], cure_id=_cure.id
+                service_id=services,
+                tooth_id=tooth["id"],
+                cure_id=_cure.id,
+                service_name=service.name,
+                service_price=service.price,
             )
             db.add(_cure_service)
     _cure.updated_at = datetime.datetime.now()

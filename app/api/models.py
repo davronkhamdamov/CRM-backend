@@ -69,6 +69,8 @@ class CureService(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     service_id = Column(UUID, ForeignKey("services.id"))
+    service_name = Column(String, nullable=False)
+    service_price = Column(Integer, nullable=False)
     tooth_id = Column(Integer, nullable=False)
     cure_id = Column(UUID, ForeignKey("cure.id"))
     created_at = Column(DateTime, default=datetime.datetime.now)

@@ -103,7 +103,7 @@ async def get_staffs_salary_route(
             _cures.append(result)
 
     _staffs = get_all_staffs(db, skip, limit, staff_id=filter_staff)
-    if current_staff["role"] != "admin":
+    if current_staff["role"] != "admin" and current_staff["role"] != "reception":
         _staffs = get_all_staffs(db, skip, limit, staff_id=current_staff["id"])
     staffs = []
     for staff in _staffs:

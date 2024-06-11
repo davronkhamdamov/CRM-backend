@@ -21,6 +21,19 @@ def get_cures(db: Session, staff_id: uuid.UUID = None):
     return query.order_by(Cure.start_time.desc()).all()
 
 
+def get_debt_cures(db: Session, staff_id: uuid.UUID = None):
+    query = (
+        db.query(Cure, Staffs, Users)
+        .select_from(Cure)
+        .join(Users, Cure.user_id == Users.id)
+        .join(Staffs, Cure.staff_id == Staffs.id)
+        .filter(Cure.price > Cure.payed_price)
+    )
+    if staff_id != "undefined" and staff_id:
+        query = query.filter(Staffs.id == staff_id)
+    return query.order_by(Cure.start_time.desc()).all()
+
+
 def get_cure_with_service(db: Session, cure_id: uuid.UUID):
     return (
         db.query(CureService, Services)

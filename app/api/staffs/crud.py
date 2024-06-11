@@ -68,7 +68,6 @@ def get_cures_for_salary(
     db: Session,
     filter_staff: Optional[uuid.UUID] = None,
 ):
-
     query = (
         db.query(Cure)
         .filter(Cure.is_done == "Yakunlandi")

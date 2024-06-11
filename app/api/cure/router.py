@@ -19,6 +19,7 @@ from app.api.cure.crud import (
     get_cures_for_staff_by_id,
     update_cure_status,
     get_cures_for_staff_count,
+    get_debt_cures,
 )
 from app.api.schemas import Response, CureSchema, updateCure, PaymentsSchema, Status
 from app.api.staffs.router import date_components
@@ -162,6 +163,70 @@ async def get_cure_service(
 
     return Response(
         code=200, status="ok", message="success", result=result_dict
+    ).model_dump()
+
+
+@router.get("/debt")
+async def get_cures_route(
+    req: Request,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
+    staff = req.query_params.get("filter-staff")
+    _cure = get_debt_cures(db, staff)
+    result_dict = []
+    start_time = req.query_params.get("start-date")
+    end_time = req.query_params.get("end-date")
+    for cure, staff, user in _cure:
+        if start_time != "null" and end_time != "null":
+            iso_start_datetime = datetime.fromisoformat(
+                start_time.replace("Z", "+00:00")
+            )
+            iso_end_datetime = datetime.fromisoformat(end_time.replace("Z", "+00:00"))
+            if (
+                date_components(iso_start_datetime)
+                <= date_components(cure.start_time)
+                <= date_components(iso_end_datetime)
+            ):
+                result_dict.append(
+                    {
+                        "cure_id": cure.id,
+                        "user_id": user.id,
+                        "user_name": user.name,
+                        "user_surname": user.surname,
+                        "is_done": cure.is_done,
+                        "start_time": cure.start_time,
+                        "end_time": cure.end_time,
+                        "price": cure.price,
+                        "payed_price": cure.payed_price,
+                        "staff_name": staff.name,
+                        "staff_surname": staff.surname,
+                        "created_at": cure.created_at,
+                    }
+                )
+        else:
+            result_dict.append(
+                {
+                    "cure_id": cure.id,
+                    "user_id": user.id,
+                    "user_name": user.name,
+                    "user_surname": user.surname,
+                    "is_done": cure.is_done,
+                    "start_time": cure.start_time,
+                    "end_time": cure.end_time,
+                    "price": cure.price,
+                    "payed_price": cure.payed_price,
+                    "staff_name": staff.name,
+                    "staff_surname": staff.surname,
+                    "created_at": cure.created_at,
+                }
+            )
+    return Response(
+        code=200,
+        status="ok",
+        message="success",
+        result=result_dict,
+        total=len(result_dict),
     ).model_dump()
 
 

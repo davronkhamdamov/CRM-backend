@@ -1,5 +1,6 @@
 import datetime
 import uuid
+from datetime import date
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -44,9 +45,14 @@ def get_cure_with_service(db: Session, cure_id: uuid.UUID):
 
 
 def get_cures_for_staff(
-    db: Session, current_staff_id: uuid.UUID, skip: int = 0, limit: int = 10
+    db: Session,
+    current_staff_id: uuid.UUID,
+    start_date_str: str = None,
+    end_date_str: str = None,
+    skip: int = 0,
+    limit: int = 10,
 ):
-    return (
+    query = (
         db.query(Cure, Staffs, Users)
         .select_from(Cure)
         .join(Users, Cure.user_id == Users.id)
@@ -54,15 +60,30 @@ def get_cures_for_staff(
         .filter(Cure.staff_id == current_staff_id)
         .order_by(Cure.is_done.asc())
         .order_by(Cure.start_time.asc())
-        .offset(skip * limit)
-        .limit(limit)
-        .all()
     )
+    if start_date_str:
+        try:
+            start_date = date.fromisoformat(start_date_str)
+            start_date = datetime.datetime(
+                start_date.year, start_date.month, start_date.day
+            )
+            query = query.filter(Cure.start_time >= start_date)
+        except ValueError:
+            pass
+
+    if end_date_str:
+        try:
+            end_date = date.fromisoformat(end_date_str)
+            end_date = datetime.datetime(
+                end_date.year, end_date.month, end_date.day, 23, 59, 59
+            )
+            query = query.filter(Cure.start_time <= end_date)
+        except ValueError:
+            pass
+    return query.offset(skip * limit).limit(limit).all()
 
 
-def get_cures_for_staff_count(
-    db: Session, current_staff_id: uuid.UUID, skip: int = 0, limit: int = 10
-):
+def get_cures_for_staff_count(db: Session, current_staff_id: uuid.UUID):
     return (
         db.query(Cure, Staffs, Users)
         .select_from(Cure)
@@ -125,12 +146,11 @@ def get_cure_by_id(db: Session, cure_id: uuid.UUID):
 
 
 def create_cure(db: Session, cure: CureSchema):
-    print(cure.start_time)
     _cure = Cure(
         staff_id=cure.staff_id,
         user_id=cure.user_id,
-        start_time=cure.start_time,
-        end_time=cure.end_time,
+        start_time=datetime.datetime.strptime(cure.start_time, "%Y-%m-%d %H-%M-%S"),
+        end_time=datetime.datetime.strptime(cure.end_time, "%Y-%m-%d %H-%M-%S"),
         img_url=cure.img_url,
         created_at=datetime.datetime.now().isoformat(),
     )

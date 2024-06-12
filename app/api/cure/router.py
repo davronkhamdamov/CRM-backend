@@ -37,8 +37,12 @@ async def get_cures_for_staff_route(
 ):
     limit = int(req.query_params.get("results") or 10)
     skip = int(req.query_params.get("page") or 1) - 1
-    _cure = get_cures_for_staff(db, current_staff["id"], skip, limit)
-    _cure_count = get_cures_for_staff_count(db, current_staff["id"], skip, limit)
+    start_date = req.query_params.get("start-date")
+    end_date = req.query_params.get("end-date")
+    _cure = get_cures_for_staff(
+        db, current_staff["id"], start_date, end_date, skip, limit
+    )
+    _cure_count = get_cures_for_staff_count(db, current_staff["id"])
     result_dict = [
         {
             "cure_id": cure.id,
@@ -275,7 +279,7 @@ async def get_cures_route(
     start_time = req.query_params.get("start-date")
     end_time = req.query_params.get("end-date")
     for cure, staff, user in _cure:
-        if start_time != "null" and end_time != "null":
+        if start_time != "null" and start_time and end_time != "null" and end_time:
             iso_start_datetime = datetime.fromisoformat(
                 start_time.replace("Z", "+00:00")
             )

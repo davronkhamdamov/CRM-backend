@@ -93,7 +93,6 @@ async def get_staffs_salary_route(
     iso_end_datetime = datetime.fromisoformat(
         req.query_params.get("end-date").replace("Z", "+00:00")
     )
-
     for result in cures_for_salary:
         if (
             date_components(iso_start_datetime)
@@ -101,7 +100,6 @@ async def get_staffs_salary_route(
             <= date_components(iso_end_datetime)
         ):
             _cures.append(result)
-
     _staffs = get_all_staffs(db, skip, limit, staff_id=filter_staff)
     if current_staff["role"] != "admin" and current_staff["role"] != "reception":
         _staffs = get_all_staffs(db, skip, limit, staff_id=current_staff["id"])
@@ -118,19 +116,19 @@ async def get_staffs_salary_route(
 
         if _staff not in staffs:
             staffs.append(_staff)
-
     for cure in _cures:
         for i, staff in enumerate(staffs):
             if cure.staff_id == staff["id"]:
                 staffs[i]["cures"].append(cure)
-                for service in services_for_salary:
-                    if service.cure_id == cure.id:
-                        staffs[i]["salary"] += int(
-                            get_service_by_id(db, service.service_id).price
-                        )
+                staffs[i]["salary"] = cure.price
+                if cure.price == 0:
+                    for service in services_for_salary:
+                        if service.cure_id == cure.id:
+                            staffs[i]["salary"] += int(
+                                get_service_by_id(db, service.service_id).price
+                            )
 
     _count_of_staffs = count_staffs(db)
-
     return Response(
         code=200,
         status="ok",

@@ -1,6 +1,6 @@
 import hashlib
 import uuid
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional
 
 from sqlalchemy import func, or_
@@ -67,13 +67,29 @@ def get_all_staff(db: Session):
 def get_cures_for_salary(
     db: Session,
     filter_staff: Optional[uuid.UUID] = None,
+    start_date_str: str = None,
+    end_date_str: str = None,
 ):
     query = (
         db.query(Cure)
         .filter(Cure.is_done == "Yakunlandi")
         .filter(Cure.price == Cure.payed_price)
     )
+    if start_date_str:
+        try:
+            start_date = date.fromisoformat(start_date_str)
+            start_date = datetime(start_date.year, start_date.month, start_date.day)
+            query = query.filter(Cure.start_time >= start_date)
+        except ValueError:
+            pass
 
+    if end_date_str:
+        try:
+            end_date = date.fromisoformat(end_date_str)
+            end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59)
+            query = query.filter(Cure.start_time <= end_date)
+        except ValueError:
+            pass
     if filter_staff and filter_staff != "undefined":
         query = query.filter(Staffs.id == filter_staff)
     return query.all()

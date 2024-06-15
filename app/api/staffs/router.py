@@ -1,5 +1,4 @@
 import uuid
-from datetime import datetime
 
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
@@ -82,24 +81,17 @@ async def get_staffs_salary_route(
 ):
     limit = int(req.query_params.get("results") or 10)
     skip = int(req.query_params.get("page") or 1) - 1
+    start_date = req.query_params.get("start-date")
+    end_date = req.query_params.get("end-date")
     filter_staff = req.query_params.get("filter-staff")
-    cures_for_salary = get_cures_for_salary(db=db, filter_staff=filter_staff)
+    cures_for_salary = get_cures_for_salary(
+        db=db,
+        filter_staff=filter_staff,
+        start_date_str=start_date,
+        end_date_str=end_date,
+    )
     services_for_salary = get_cure_services_for_salary(db=db)
-    _cures = []
 
-    iso_start_datetime = datetime.fromisoformat(
-        req.query_params.get("start-date").replace("Z", "+00:00")
-    )
-    iso_end_datetime = datetime.fromisoformat(
-        req.query_params.get("end-date").replace("Z", "+00:00")
-    )
-    for result in cures_for_salary:
-        if (
-            date_components(iso_start_datetime)
-            <= date_components(result.start_time)
-            <= date_components(iso_end_datetime)
-        ):
-            _cures.append(result)
     _staffs = get_all_staffs(db, skip, limit, staff_id=filter_staff)
     if current_staff["role"] != "admin" and current_staff["role"] != "reception":
         _staffs = get_all_staffs(db, skip, limit, staff_id=current_staff["id"])
@@ -116,7 +108,7 @@ async def get_staffs_salary_route(
 
         if _staff not in staffs:
             staffs.append(_staff)
-    for cure in _cures:
+    for cure in cures_for_salary:
         for i, staff in enumerate(staffs):
             if cure.staff_id == staff["id"]:
                 staffs[i]["cures"].append(cure)

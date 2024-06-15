@@ -112,7 +112,7 @@ async def get_staffs_salary_route(
         for i, staff in enumerate(staffs):
             if cure.staff_id == staff["id"]:
                 staffs[i]["cures"].append(cure)
-                staffs[i]["salary"] = cure.price
+                staffs[i]["salary"] += cure.price
                 if cure.price == 0:
                     for service in services_for_salary:
                         if service.cure_id == cure.id:

@@ -2,7 +2,7 @@ import datetime
 import uuid
 from datetime import date
 
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
 from app.api.models import Cure, Staffs, Users, CureService, Services, Payments
@@ -10,16 +10,131 @@ from app.api.schemas import CureSchema, updateCure, PaymentsSchema
 from app.api.users.crud import get_user_by_id
 
 
-def get_cures(db: Session, staff_id: uuid.UUID = None):
+def get_cures(
+    db: Session,
+    staff_id: uuid.UUID = None,
+    start_date_str: str = None,
+    end_date_str: str = None,
+    filters=None,
+    skip: int = 0,
+    limit: int = 10,
+):
     query = (
         db.query(Cure, Staffs, Users)
         .select_from(Cure)
         .join(Users, Cure.user_id == Users.id)
         .join(Staffs, Cure.staff_id == Staffs.id)
     )
+    if filters["status"] and filters["status"] != [""]:
+        query = query.filter(Cure.is_done.in_(filters["status"]))
+    if len(filters["pay"]):
+        for pay in filters["pay"]:
+            if pay == "payed":
+                query = query.filter(
+                    or_(Cure.payed_price == Cure.price, Cure.price < Cure.payed_price)
+                ).filter(Cure.is_done == "Yakunlandi")
+            elif pay == "not_fully_payed":
+                query = (
+                    query.filter(Cure.payed_price > 0)
+                    .filter(Cure.price != Cure.payed_price)
+                    .filter(Cure.price > Cure.payed_price)
+                )
+            elif pay == "not_payed":
+                query = query.filter(Cure.payed_price == 0).filter(
+                    Cure.is_done == "Yakunlandi"
+                )
+            elif pay == "waiting":
+                query = (
+                    query.filter(Cure.payed_price == 0)
+                    .filter(Cure.is_done == "Kutilmoqda")
+                    .filter(Cure.price == 0)
+                )
+
+    if start_date_str:
+        try:
+            start_date = date.fromisoformat(start_date_str)
+            start_date = datetime.datetime(
+                start_date.year, start_date.month, start_date.day
+            )
+            query = query.filter(Cure.start_time >= start_date)
+        except ValueError:
+            pass
+
+    if end_date_str:
+        try:
+            end_date = date.fromisoformat(end_date_str)
+            end_date = datetime.datetime(
+                end_date.year, end_date.month, end_date.day, 23, 59, 59
+            )
+            query = query.filter(Cure.start_time <= end_date)
+        except ValueError:
+            pass
     if staff_id != "undefined" and staff_id:
         query = query.filter(Staffs.id == staff_id)
-    return query.order_by(Cure.start_time.desc()).all()
+    return (
+        query.order_by(Cure.start_time.desc()).offset(skip * limit).limit(limit).all()
+    )
+
+
+def get_cures_count(
+    db: Session,
+    staff_id: uuid.UUID = None,
+    start_date_str: str = None,
+    end_date_str: str = None,
+    filters=None,
+):
+    query = (
+        db.query(Cure, Staffs, Users)
+        .select_from(Cure)
+        .join(Users, Cure.user_id == Users.id)
+        .join(Staffs, Cure.staff_id == Staffs.id)
+    )
+    if filters["status"] and filters["status"] != [""]:
+        query = query.filter(Cure.is_done.in_(filters["status"]))
+    if len(filters["pay"]):
+        for pay in filters["pay"]:
+            if pay == "payed":
+                query = query.filter(
+                    or_(Cure.payed_price == Cure.price, Cure.price < Cure.payed_price)
+                ).filter(Cure.is_done == "Yakunlandi")
+            elif pay == "not_fully_payed":
+                query = (
+                    query.filter(Cure.payed_price > 0)
+                    .filter(Cure.price != Cure.payed_price)
+                    .filter(Cure.price > Cure.payed_price)
+                )
+            elif pay == "not_payed":
+                query = query.filter(Cure.payed_price == 0).filter(
+                    Cure.is_done == "Yakunlandi"
+                )
+            elif pay == "waiting":
+                query = (
+                    query.filter(Cure.payed_price == 0)
+                    .filter(Cure.is_done == "Kutilmoqda")
+                    .filter(Cure.price == 0)
+                )
+    if start_date_str:
+        try:
+            start_date = date.fromisoformat(start_date_str)
+            start_date = datetime.datetime(
+                start_date.year, start_date.month, start_date.day
+            )
+            query = query.filter(Cure.start_time >= start_date)
+        except ValueError:
+            pass
+
+    if end_date_str:
+        try:
+            end_date = date.fromisoformat(end_date_str)
+            end_date = datetime.datetime(
+                end_date.year, end_date.month, end_date.day, 23, 59, 59
+            )
+            query = query.filter(Cure.start_time <= end_date)
+        except ValueError:
+            pass
+    if staff_id != "undefined" and staff_id:
+        query = query.filter(Staffs.id == staff_id)
+    return query.order_by(Cure.start_time.desc()).count()
 
 
 def get_debt_cures(db: Session, staff_id: uuid.UUID = None):

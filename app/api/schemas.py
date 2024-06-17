@@ -107,6 +107,7 @@ class Response(BaseModel, Generic[T]):
     result: Optional[T] = None
     info: Optional[dict] = None
     role: Optional[str] = None
+    current_staff: Optional[dict] = None
 
 
 class LoginSchema(BaseModel):

@@ -21,6 +21,7 @@ from app.api.cure.crud import (
     get_cures_for_staff_count,
     get_debt_cures,
     get_cures_count,
+    get_cures_for_schedule,
 )
 from app.api.schemas import Response, CureSchema, updateCure, PaymentsSchema, Status
 from app.api.staffs.router import date_components
@@ -40,10 +41,16 @@ async def get_cures_for_staff_route(
     skip = int(req.query_params.get("page") or 1) - 1
     start_date = req.query_params.get("start-date")
     end_date = req.query_params.get("end-date")
+    filters = {"pay": [], "status": []}
+    for key in req.query_params:
+        if key.startswith("filters[5]"):
+            filters["pay"].append(req.query_params.getlist(key)[0])
+        elif key.startswith("filters[is_done]"):
+            filters["status"].append(req.query_params.getlist(key)[0])
     _cure = get_cures_for_staff(
-        db, current_staff["id"], start_date, end_date, skip, limit
+        db, current_staff["id"], start_date, end_date, skip, limit, filters
     )
-    _cure_count = get_cures_for_staff_count(db, current_staff["id"])
+    _cure_count = get_cures_for_staff_count(db, current_staff["id"], filters)
     result_dict = [
         {
             "cure_id": cure.id,
@@ -77,6 +84,7 @@ async def get_cures_for_staff_route(
 ):
     limit = int(req.query_params.get("results") or 10)
     skip = int(req.query_params.get("page") or 1) - 1
+
     _cure = get_cures_for_staff_by_id(db, staff_id, skip, limit)
     result_dict = [
         {
@@ -231,6 +239,40 @@ async def get_cures_route(
         message="success",
         result=result_dict,
         total=len(result_dict),
+    ).model_dump()
+
+
+@router.get("/for-schedule")
+async def get_cures_route(
+    req: Request,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
+    staff = req.query_params.get("filter-staff")
+    _cure = get_cures_for_schedule(db, staff)
+    result_dict = []
+    for cure, staff, user in _cure:
+        result_dict.append(
+            {
+                "cure_id": cure.id,
+                "user_id": user.id,
+                "user_name": user.name,
+                "user_surname": user.surname,
+                "is_done": cure.is_done,
+                "start_time": cure.start_time,
+                "end_time": cure.end_time,
+                "price": cure.price,
+                "payed_price": cure.payed_price,
+                "staff_name": staff.name,
+                "staff_surname": staff.surname,
+                "created_at": cure.created_at,
+            }
+        )
+    return Response(
+        code=200,
+        status="ok",
+        message="success",
+        result=result_dict,
     ).model_dump()
 
 

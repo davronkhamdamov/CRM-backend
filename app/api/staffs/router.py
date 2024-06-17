@@ -56,7 +56,7 @@ async def get_staffs_route(
 @router.get("/all")
 async def get_staffs_route(
     db: Session = Depends(get_db),
-    _=Depends(get_current_user),
+    _current_staff: dict = Depends(get_current_user),
 ):
     _staffs = get_all_staff(db)
     _count_of_staffs = count_staffs(db)
@@ -66,6 +66,7 @@ async def get_staffs_route(
         message="success",
         result=_staffs,
         total=_count_of_staffs,
+        current_staff=_current_staff,
     ).model_dump()
 
 

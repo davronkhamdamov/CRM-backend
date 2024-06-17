@@ -23,7 +23,7 @@ def get_cures(
         db.query(Cure, Staffs, Users)
         .select_from(Cure)
         .join(Users, Cure.user_id == Users.id)
-        .join(Staffs, Cure.staff_id == Staffs.id)
+        .join(Staffs, Staffs.id == Cure.staff_id)
     )
     if filters["status"] and filters["status"] != [""]:
         query = query.filter(Cure.is_done.in_(filters["status"]))
@@ -74,6 +74,22 @@ def get_cures(
     return (
         query.order_by(Cure.start_time.desc()).offset(skip * limit).limit(limit).all()
     )
+
+
+def get_cures_for_schedule(
+    db: Session,
+    staff_id: uuid.UUID = None,
+):
+    query = (
+        db.query(Cure, Staffs, Users)
+        .select_from(Cure)
+        .join(Users, Cure.user_id == Users.id)
+        .join(Staffs, Staffs.id == Cure.staff_id)
+    )
+
+    if staff_id != "undefined" and staff_id:
+        query = query.filter(Staffs.id == staff_id)
+    return query.all()
 
 
 def get_cures_count(
@@ -166,6 +182,7 @@ def get_cures_for_staff(
     end_date_str: str = None,
     skip: int = 0,
     limit: int = 10,
+    filters=None,
 ):
     query = (
         db.query(Cure, Staffs, Users)
@@ -195,36 +212,87 @@ def get_cures_for_staff(
             query = query.filter(Cure.start_time <= end_date)
         except ValueError:
             pass
+
+    if filters["status"] and filters["status"] != [""]:
+        query = query.filter(Cure.is_done.in_(filters["status"]))
+    if len(filters["pay"]):
+        for pay in filters["pay"]:
+            if pay == "payed":
+                query = query.filter(
+                    or_(Cure.payed_price == Cure.price, Cure.price < Cure.payed_price)
+                ).filter(Cure.is_done == "Yakunlandi")
+            elif pay == "not_fully_payed":
+                query = (
+                    query.filter(Cure.payed_price > 0)
+                    .filter(Cure.price != Cure.payed_price)
+                    .filter(Cure.price > Cure.payed_price)
+                )
+            elif pay == "not_payed":
+                query = query.filter(Cure.payed_price == 0).filter(
+                    Cure.is_done == "Yakunlandi"
+                )
+            elif pay == "waiting":
+                query = (
+                    query.filter(Cure.payed_price == 0)
+                    .filter(Cure.is_done == "Kutilmoqda")
+                    .filter(Cure.price == 0)
+                )
+
     return query.offset(skip * limit).limit(limit).all()
 
 
-def get_cures_for_staff_count(db: Session, current_staff_id: uuid.UUID):
-    return (
+def get_cures_for_staff_count(db: Session, current_staff_id: uuid.UUID, filters=None):
+    query = (
         db.query(Cure, Staffs, Users)
         .select_from(Cure)
         .join(Users, Cure.user_id == Users.id)
         .join(Staffs, Cure.staff_id == Staffs.id)
         .filter(Cure.staff_id == current_staff_id)
-        .order_by(Cure.is_done.asc())
-        .order_by(Cure.start_time.asc())
-        .count()
     )
+
+    if filters["status"] and filters["status"] != [""]:
+        query = query.filter(Cure.is_done.in_(filters["status"]))
+    if len(filters["pay"]):
+        for pay in filters["pay"]:
+            if pay == "payed":
+                query = query.filter(
+                    or_(Cure.payed_price == Cure.price, Cure.price < Cure.payed_price)
+                ).filter(Cure.is_done == "Yakunlandi")
+            elif pay == "not_fully_payed":
+                query = (
+                    query.filter(Cure.payed_price > 0)
+                    .filter(Cure.price != Cure.payed_price)
+                    .filter(Cure.price > Cure.payed_price)
+                )
+            elif pay == "not_payed":
+                query = query.filter(Cure.payed_price == 0).filter(
+                    Cure.is_done == "Yakunlandi"
+                )
+            elif pay == "waiting":
+                query = (
+                    query.filter(Cure.payed_price == 0)
+                    .filter(Cure.is_done == "Kutilmoqda")
+                    .filter(Cure.price == 0)
+                )
+
+    return query.count()
 
 
 def get_cures_for_staff_by_id(
-    db: Session, staff_id: uuid.UUID, skip: int = 0, limit: int = 10
+    db: Session,
+    staff_id: uuid.UUID,
+    skip: int = 0,
+    limit: int = 10,
 ):
-    return (
+    query = (
         db.query(Cure, Staffs, Users)
         .select_from(Cure)
         .join(Users, Cure.user_id == Users.id)
         .join(Staffs, Cure.staff_id == Staffs.id)
         .order_by(Cure.start_time.desc())
-        .filter(Cure.staff_id == staff_id)
-        .offset(skip * limit)
-        .limit(limit)
-        .all()
-    )
+    ).filter(Cure.staff_id == staff_id)
+
+    return query.offset(skip * limit).limit(limit).all()
 
 
 def get_cures_for_patient(
@@ -251,7 +319,7 @@ def get_cure_by_id_for_staff(
         .select_from(Cure)
         .join(Users, Cure.user_id == Users.id)
         .filter(cure_id == Cure.id)
-        .join(Staffs, Staffs.id == current_staff_id)
+        .join(Staffs, Staffs.id == Cure.staff_id)
         .first()
     )
 

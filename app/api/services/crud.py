@@ -36,8 +36,14 @@ def get_service_by_id(db: Session, service_id: uuid.UUID):
     return db.query(Services).filter(Services.id == service_id).first()
 
 
-def get_service_count(db: Session):
-    return db.query(Services).filter(Services.status).count()
+def get_service_count(db: Session, search: Optional[str] = None):
+    query = db.query(Services, ServicesCategory).join(
+        Services, Services.service_category_id == ServicesCategory.id
+    )
+    if search:
+        search = f"%{search}%"
+        query = query.filter(Services.name.ilike(search))
+    return query.count()
 
 
 def create_service(db: Session, service: ServicesSchema):

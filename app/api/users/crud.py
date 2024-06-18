@@ -40,6 +40,10 @@ def count_users(db: Session):
     return db.query(func.count(Users.id)).scalar()
 
 
+def get_users(db: Session):
+    return db.query(Users).all()
+
+
 def qarz_user_count(db: Session):
     return db.query(Users).filter(Users.balance < 0).count()
 

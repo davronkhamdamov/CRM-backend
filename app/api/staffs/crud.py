@@ -60,8 +60,11 @@ def get_all_staffs(
     return query.offset(skip * limit).limit(limit).all()
 
 
-def get_all_staff(db: Session):
-    return db.query(Staffs).all()
+def get_all_staff(db: Session, staff_id: Optional[uuid.UUID] = None):
+    query = db.query(Staffs).filter(Staffs.role == "doctor")
+    if staff_id:
+        query.filter(Staffs.id == staff_id)
+    return query.all()
 
 
 def get_cures_for_salary(
@@ -92,6 +95,29 @@ def get_cures_for_salary(
             pass
     if filter_staff and filter_staff != "undefined":
         query = query.filter(Staffs.id == filter_staff)
+    return query.all()
+
+
+def get_cures_for_statistic(
+    db: Session,
+    year_month: str = None,
+):
+    query = (
+        db.query(Cure)
+        .filter(Cure.is_done == "Yakunlandi")
+        .filter(Cure.price == Cure.payed_price)
+    )
+    if year_month:
+        year, month = map(int, year_month.split("-"))
+        start_date = datetime(year, month, 1)
+        if month == 12:
+            end_date = datetime(year + 1, 1, 1)
+        else:
+            end_date = datetime(year, month + 1, 1)
+        query = query.filter(
+            Cure.created_at >= start_date,
+            Cure.created_at < end_date,
+        )
     return query.all()
 
 

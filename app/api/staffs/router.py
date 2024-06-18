@@ -19,6 +19,7 @@ from app.api.staffs.crud import (
     get_all_staff,
     update_staff_image,
     update_staff_color,
+    get_cures_for_statistic,
 )
 from app.db import get_db
 from app.utils.auth_middleware import get_current_user
@@ -42,7 +43,7 @@ async def get_staffs_route(
         search=req.query_params.get("search"),
         order_by=req.query_params.get("order"),
     )
-    _count_of_staffs = count_staffs(db)
+    _count_of_staffs = count_staffs(db,  search=req.query_params.get("search"),)
     return Response(
         code=200,
         status="ok",
@@ -72,6 +73,52 @@ async def get_staffs_route(
 
 def date_components(date1):
     return date1.year, date1.month, date1.day
+
+
+@router.get("/statistic")
+async def get_staffs_salary_route(
+    req: Request,
+    db: Session = Depends(get_db),
+    current_staff: dict = Depends(get_current_user),
+):
+    month = req.query_params.get("month")
+    cures_for_salary = get_cures_for_statistic(db=db, year_month=month)
+    services_for_salary = get_cure_services_for_salary(db=db)
+
+    _staffs = []
+    if current_staff["role"] != "admin" and current_staff["role"] != "reception":
+        _staffs = get_all_staff(db, staff_id=current_staff["id"])
+    else:
+        _staffs = get_all_staff(db)
+    staffs = []
+    for staff in _staffs:
+        _staff = {
+            "id": staff.id,
+            "name": staff.name,
+            "foiz": staff.foiz,
+            "Maosh": 0,
+        }
+        if _staff not in staffs:
+            staffs.append(_staff)
+    for cure in cures_for_salary:
+        for i, staff in enumerate(staffs):
+            if cure.staff_id == staff["id"]:
+                staffs[i]["Maosh"] += cure.price
+                if cure.price == 0:
+                    for service in services_for_salary:
+                        if service.cure_id == cure.id:
+                            staffs[i]["Maosh"] += int(
+                                get_service_by_id(db, service.service_id).price
+                            )
+
+    _count_of_staffs = count_staffs(db)
+    return Response(
+        code=200,
+        status="ok",
+        message="success",
+        result=staffs,
+        role=current_staff["role"],
+    ).model_dump()
 
 
 @router.get("/salary")

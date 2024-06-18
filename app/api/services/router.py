@@ -59,13 +59,17 @@ async def get_services_route(
 ):
     limit = int(req.query_params.get("results") or 10)
     skip = int(req.query_params.get("page") or 1) - 1
+    search = req.query_params.get("search")
     _services = get_service(
         db,
         skip,
         limit,
-        search=req.query_params.get("search"),
+        search=search,
     )
-    _count_of_services = get_service_count(db)
+    _count_of_services = get_service_count(
+        db,
+        search=search,
+    )cod
     return Response(
         code=200,
         status="ok",

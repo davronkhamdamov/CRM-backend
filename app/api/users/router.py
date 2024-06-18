@@ -14,6 +14,7 @@ from app.api.users.crud import (
     qarz_user_count,
     update_user_prikus,
     update_user_image,
+    get_users,
 )
 from app.db import get_db
 from app.utils.auth_middleware import get_current_user
@@ -48,7 +49,7 @@ async def get_user_by_id_route(
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
 ):
-    _users = get_user(db)
+    _users = get_users(db)
     address_users = {}
     for user in _users:
         if user.address in address_users:

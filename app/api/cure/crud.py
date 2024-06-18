@@ -72,7 +72,11 @@ def get_cures(
     if staff_id != "undefined" and staff_id:
         query = query.filter(Staffs.id == staff_id)
     return (
-        query.order_by(Cure.start_time.desc()).offset(skip * limit).limit(limit).all()
+        query.order_by(Cure.is_done == "Bekor qilingan")
+        .order_by(Cure.start_time.desc())
+        .offset(skip * limit)
+        .limit(limit)
+        .all()
     )
 
 
@@ -190,7 +194,9 @@ def get_cures_for_staff(
         .join(Users, Cure.user_id == Users.id)
         .join(Staffs, Cure.staff_id == Staffs.id)
         .filter(Cure.staff_id == current_staff_id)
-        .order_by(Cure.is_done.asc())
+        .order_by(
+            Cure.is_done == "Bekor qilingan",
+        )
         .order_by(Cure.start_time.asc())
     )
     if start_date_str:

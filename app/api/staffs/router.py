@@ -43,7 +43,9 @@ async def get_staffs_route(
         search=req.query_params.get("search"),
         order_by=req.query_params.get("order"),
     )
-    _count_of_staffs = count_staffs(db,  search=req.query_params.get("search"),)
+    _count_of_staffs = count_staffs(
+        db, current_user=current_user, search=req.query_params.get("search")
+    )
     return Response(
         code=200,
         status="ok",

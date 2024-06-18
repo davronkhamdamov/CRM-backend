@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime, date
 from typing import Optional
 
-from sqlalchemy import func, or_
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.api.models import Staffs, Cure, CureService
@@ -125,8 +125,21 @@ def get_cure_services_for_salary(db: Session):
     return db.query(CureService).all()
 
 
-def count_staffs(db: Session):
-    return db.query(func.count(Staffs.id)).scalar()
+def count_staffs(
+    db: Session,
+    search: Optional[str] = None,
+    current_user: dict = None,
+):
+
+    query = db.query(Staffs)
+
+    if search:
+        search = f"%{search}%"
+        query = query.filter(
+            or_(Staffs.name.ilike(search), Staffs.surname.ilike(search))
+        )
+
+    return query.filter(Staffs.id != current_user["id"]).count()
 
 
 def get_staff_by_id(db: Session, staff_id: uuid.UUID):

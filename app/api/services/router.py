@@ -69,7 +69,7 @@ async def get_services_route(
     _count_of_services = get_service_count(
         db,
         search=search,
-    )cod
+    )
     return Response(
         code=200,
         status="ok",

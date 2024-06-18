@@ -130,16 +130,15 @@ def count_staffs(
     search: Optional[str] = None,
     current_user: dict = None,
 ):
-
     query = db.query(Staffs)
-
     if search:
         search = f"%{search}%"
         query = query.filter(
             or_(Staffs.name.ilike(search), Staffs.surname.ilike(search))
         )
-
-    return query.filter(Staffs.id != current_user["id"]).count()
+    if current_user:
+        query.filter(Staffs.id != current_user["id"])
+    return query.count()
 
 
 def get_staff_by_id(db: Session, staff_id: uuid.UUID):

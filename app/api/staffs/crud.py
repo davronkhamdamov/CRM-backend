@@ -74,9 +74,7 @@ def get_cures_for_salary(
     end_date_str: str = None,
 ):
     query = (
-        db.query(Cure)
-        .filter(Cure.is_done == "Yakunlandi")
-        .filter(Cure.price == Cure.payed_price)
+        db.query(Cure).filter(Cure.is_done == "Yakunlandi").filter(Cure.payed_price > 0)
     )
     if start_date_str:
         try:

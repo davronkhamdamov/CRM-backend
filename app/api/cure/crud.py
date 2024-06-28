@@ -73,7 +73,7 @@ def get_cures(
         query = query.filter(Staffs.id == staff_id)
     return (
         query.order_by(Cure.is_done == "Bekor qilingan")
-        .order_by(Cure.start_time.desc())
+        .order_by(Cure.created_at.desc())
         .offset(skip * limit)
         .limit(limit)
         .all()

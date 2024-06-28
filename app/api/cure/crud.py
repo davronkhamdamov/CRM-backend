@@ -197,7 +197,7 @@ def get_cures_for_staff(
         .order_by(
             Cure.is_done == "Bekor qilingan",
         )
-        .order_by(Cure.start_time.asc())
+        .order_by(Cure.created_at.desc())
     )
     if start_date_str:
         try:

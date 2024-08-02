@@ -50,6 +50,7 @@ def create_service(db: Session, service: ServicesSchema):
     _service = Services(
         name=service.name,
         price=service.price,
+        raw_material_price=service.raw_material_price,
         status=service.status,
         service_category_id=service.service_category_id,
         created_at=datetime.now().isoformat(),
@@ -70,6 +71,7 @@ def update_service(db: Session, service: ServicesSchema, service_id: uuid.UUID):
     _service = get_service_by_id(db, service_id)
     _service.name = service.name
     _service.price = service.price
+    _service.raw_material_price = service.raw_material_price
     _service.status = service.status
     _service.updated_at = datetime.now().isoformat()
     db.commit()

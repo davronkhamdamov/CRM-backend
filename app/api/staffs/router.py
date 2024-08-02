@@ -154,6 +154,7 @@ async def get_staffs_salary_route(
             "foiz": staff.foiz,
             "cures": [],
             "salary": 0,
+            "raw_material_price": 0,
         }
 
         if _staff not in staffs:
@@ -163,6 +164,7 @@ async def get_staffs_salary_route(
             if cure.staff_id == staff["id"]:
                 staffs[i]["cures"].append(cure)
                 staffs[i]["salary"] += cure.price
+                staffs[i]["raw_material_price"] += cure.raw_material_price
                 if cure.price == 0:
                     for service in services_for_salary:
                         if service.cure_id == cure.id:

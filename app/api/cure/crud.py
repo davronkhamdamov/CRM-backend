@@ -390,19 +390,23 @@ def end_cure(
     is_done: str,
 ):
     _cure = get_cure_by_id(db, cure_id)
+    raw_material_price = 0
     for tooth in cure.payload_services:
         for services in tooth["services"]:
             service = db.query(Services).filter(Services.id == services).first()
+            raw_material_price += service.raw_material_price
             _cure_service = CureService(
                 service_id=services,
                 tooth_id=tooth["id"],
                 cure_id=_cure.id,
                 service_name=service.name,
                 service_price=service.price,
+                raw_material_price=service.raw_material_price,
             )
             db.add(_cure_service)
     _cure.updated_at = datetime.datetime.now()
     _cure.price = cure.price
+    _cure.raw_material_price = raw_material_price
     _cure.is_done = is_done
     db.commit()
     db.refresh(_cure)

@@ -79,6 +79,7 @@ async def get_services_route(
                 "id": service.id,
                 "name": service.name,
                 "price": service.price,
+                "raw_material_price": service.raw_material_price,
                 "category_id": services_category.id,
                 "category_name": services_category.name,
                 "status": service.status,

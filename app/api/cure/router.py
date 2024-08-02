@@ -11,9 +11,7 @@ from app.api.cure.crud import (
     delete_cure,
     get_cure_by_id_for_staff,
     get_cures_for_staff,
-    end_cure,
     get_cure_with_service,
-    pay_with_balance_cure,
     pay_with_cash_cure,
     get_cures_for_patient,
     get_cures_for_staff_by_id,
@@ -22,6 +20,8 @@ from app.api.cure.crud import (
     get_debt_cures,
     get_cures_count,
     get_cures_for_schedule,
+    pay_with_balance_cure,
+    end_cure,
 )
 from app.api.schemas import Response, CureSchema, updateCure, PaymentsSchema, Status
 from app.api.staffs.router import date_components
@@ -66,6 +66,7 @@ async def get_cures_for_staff_route(
             "description": user.description,
             "staff_surname": staff.surname,
             "created_at": cure.created_at,
+            "raw_material_price": cure.raw_material_price,
         }
         for cure, staff, user in _cure
     ]
@@ -99,6 +100,7 @@ async def get_cures_for_staff_route(
             "end_time": cure.end_time,
             "staff_name": staff.name,
             "description": user.description,
+            "raw_material_price": cure.raw_material_price,
             "staff_surname": staff.surname,
             "created_at": cure.created_at,
         }
@@ -160,6 +162,7 @@ async def get_cure_service(
                     "tooth_id": _cure_service.tooth_id,
                     "price": _cure_service.service_price,
                     "created_at": _cure_service.created_at,
+                    "raw_material_price": _cure_service.raw_material_price,
                 }
             )
         else:
@@ -170,6 +173,7 @@ async def get_cure_service(
                     "tooth_id": _cure_service.tooth_id,
                     "price": _service.price,
                     "created_at": _cure_service.created_at,
+                    "raw_material_price": _cure_service.raw_material_price,
                 }
             )
 
@@ -301,6 +305,7 @@ async def get_cure_by_id_route(
         "placental_diseases": _cure[1].placental_diseases,
         "staff_name": _cure[2].name,
         "staff_surname": _cure[2].surname,
+        "raw_material_price": _cure[0].raw_material_price,
         "created_at": _cure[0].created_at,
     }
 
@@ -344,6 +349,7 @@ async def get_cures_route(
                 "payed_price": cure.payed_price,
                 "staff_name": staff.name,
                 "staff_surname": staff.surname,
+                "raw_material_price": cure.raw_material_price,
                 "created_at": cure.created_at,
             }
         )

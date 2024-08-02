@@ -63,6 +63,7 @@ class ServicesSchema(BaseModel):
     id: uuid.UUID = None
     name: str = None
     price: int = None
+    raw_material_price: int = None
     service_category_id: uuid.UUID
     status: bool = None
     created_at: datetime = None
@@ -119,6 +120,7 @@ class updateCure(BaseModel, Generic[T]):
     payload_services: Optional[T] = None
     is_done: Optional[str] = None
     price: Optional[int] = None
+    raw_material_price: Optional[int] = None
 
 
 class Prikus(BaseModel):

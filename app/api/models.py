@@ -42,7 +42,7 @@ class Staffs(Base):
     gender = Column(String, nullable=False)
     role = Column(String, default="doctor")
     color = Column(String, nullable=True)
-    foiz = Column(Integer, nullable=False)
+    foiz = Column(Integer, nullable=False, default=0)
     img_url = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.now)
     updated_at = Column(DateTime)
@@ -65,6 +65,25 @@ class Cure(Base):
     updated_at = Column(DateTime)
 
 
+class OrtoCure(Base):
+    __tablename__ = "orto_cure"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    staff_id = Column(UUID, ForeignKey("staffs.id"))
+    user_id = Column(UUID, ForeignKey("users.id"))
+    is_done = Column(String, default="Kutilmoqda")
+    start_time = Column(DateTime, nullable=False)
+    end_time = Column(DateTime, nullable=False)
+    img_url = Column(String)
+    price = Column(Integer, default=0)
+    raw_material_price = Column(Integer, default=0)
+    technic_name = Column(String, default="")
+    is_returned_technic = Column(String, nullable=True)
+    payed_price = Column(Integer, default=0)
+    created_at = Column(DateTime, default=datetime.datetime.now)
+    updated_at = Column(DateTime)
+
+
 class CureService(Base):
     __tablename__ = "cure_service"
 
@@ -75,6 +94,20 @@ class CureService(Base):
     raw_material_price = Column(Integer, default=0)
     tooth_id = Column(Integer, nullable=False)
     cure_id = Column(UUID, ForeignKey("cure.id"))
+    created_at = Column(DateTime, default=datetime.datetime.now)
+    updated_at = Column(DateTime)
+
+
+class OrtaCureService(Base):
+    __tablename__ = "orta_cure_service"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    service_id = Column(UUID, ForeignKey("services.id"))
+    service_name = Column(String, nullable=False)
+    service_price = Column(Integer, nullable=False)
+    raw_material_price = Column(Integer, default=0)
+    tooth_id = Column(Integer, nullable=False)
+    cure_id = Column(UUID, ForeignKey("orto_cure.id"))
     created_at = Column(DateTime, default=datetime.datetime.now)
     updated_at = Column(DateTime)
 

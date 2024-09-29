@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.auth.router import router as auth_route
 from app.api.cure.router import router as cure_router
 from app.api.models import Staffs
+from app.api.orto_cure_router.router import router as orto_cure_router
 from app.api.payment_type.router import router as payment_type_router
 from app.api.payments.router import router as payment_router
 from app.api.services.router import router as service_router
@@ -50,6 +51,9 @@ app.include_router(
     router=payment_type_router, prefix="/payment-type", tags=["Payment type"]
 )
 app.include_router(router=cure_router, prefix="/cure", tags=["Cure"])
+app.include_router(
+    router=orto_cure_router, prefix="/orto-cure", tags=["Orthopedic Cure"]
+)
 app.include_router(router=staffs_router, prefix="/staffs", tags=["Staffs"])
 app.include_router(router=service_router, prefix="/service", tags=["Services"])
 app.include_router(

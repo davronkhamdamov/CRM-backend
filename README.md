@@ -1,3 +1,3 @@
 # CRM backend
 
-q
+This is the backend for the CRM.

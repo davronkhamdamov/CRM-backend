@@ -4,7 +4,7 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
-from app.api.cure.crud import (
+from app.api.orto_cure_router.crud import (
     create_cure,
     get_cures,
     update_cure,
@@ -23,7 +23,7 @@ from app.api.cure.crud import (
     pay_with_balance_cure,
     end_cure,
 )
-from app.api.schemas import Response, CureSchema, updateCure, PaymentsSchema, Status
+from app.api.schemas import Response, OrtoCureSchema, updateCure, PaymentsSchema, Status
 from app.api.staffs.router import date_components
 from app.db import get_db
 from app.utils.auth_middleware import get_current_user
@@ -67,6 +67,7 @@ async def get_cures_for_staff_route(
             "staff_surname": staff.surname,
             "created_at": cure.created_at,
             "raw_material_price": cure.raw_material_price,
+            "technic_name": cure.technic_name,
         }
         for cure, staff, user in _cure
     ]
@@ -103,6 +104,7 @@ async def get_cures_for_staff_route(
             "raw_material_price": cure.raw_material_price,
             "staff_surname": staff.surname,
             "created_at": cure.created_at,
+            "technic_name": cure.technic_name,
         }
         for cure, staff, user in _cure
     ]
@@ -150,6 +152,7 @@ async def get_cure_service(
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
 ):
+
     _cure = get_cure_with_service(db, cure_id)
     result_dict = []
     for _cure_service, _service in _cure:
@@ -346,6 +349,7 @@ async def get_cures_route(
                 "payed_price": cure.payed_price,
                 "staff_name": staff.name,
                 "staff_surname": staff.surname,
+                "technic_name": cure.technic_name,
                 "raw_material_price": cure.raw_material_price,
                 "created_at": cure.created_at,
             }
@@ -361,7 +365,7 @@ async def get_cures_route(
 
 @router.post("/")
 async def create_cure_route(
-    cure: CureSchema,
+    cure: OrtoCureSchema,
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
 ):
@@ -381,7 +385,7 @@ async def delete_cure_route(
 
 @router.put("/")
 async def update_cure_route(
-    cure: CureSchema,
+    cure: OrtoCureSchema,
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
 ):

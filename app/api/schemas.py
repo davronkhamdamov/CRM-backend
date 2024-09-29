@@ -59,6 +59,24 @@ class CureSchema(BaseModel):
     updated_at: Optional[datetime] = None
 
 
+class OrtoCureSchema(BaseModel):
+    id: Optional[uuid.UUID] = None
+    staff_id: uuid.UUID = None
+    service_id: uuid.UUID = None
+    user_id: uuid.UUID = None
+    is_done: Optional[str] = None
+    start_time: str = None
+    end_time: str = None
+    img_url: str = None
+    tooth_id: str = None
+    price: Optional[int] = None
+    technic_name: str = None
+    is_returned_technic: str = None
+    payed_price: Optional[int] = None
+    created_at: datetime = None
+    updated_at: Optional[datetime] = None
+
+
 class ServicesSchema(BaseModel):
     id: uuid.UUID = None
     name: str = None

@@ -77,6 +77,7 @@ class OrtoCure(Base):
     img_url = Column(String)
     price = Column(Integer, default=0)
     raw_material_price = Column(Integer, default=0)
+    payed_raw_material_price = Column(Integer, default=0)
     technic_name = Column(String, default="")
     is_returned_technic = Column(String, nullable=True)
     payed_price = Column(Integer, default=0)

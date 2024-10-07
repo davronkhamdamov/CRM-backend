@@ -336,8 +336,8 @@ def get_cure_by_id_for_staff(
         db.query(OrtoCure, Users, Staffs)
         .select_from(OrtoCure)
         .join(Users, OrtoCure.user_id == Users.id)
-        .filter(cure_id == OrtoCure.id)
         .join(Staffs, Staffs.id == OrtoCure.staff_id)
+        .filter(cure_id == OrtoCure.id)
         .first()
     )
 
@@ -435,6 +435,15 @@ def pay_with_balance_cure(db: Session, cure_id: uuid.UUID, cure: updateCure):
     _user.balance -= cure.price
     _cure.updated_at = datetime.datetime.now()
     _cure.payed_price += cure.price
+    db.commit()
+    db.refresh(_cure)
+    return _cure
+
+
+def pay_with_technic_cure(db: Session, cure_id: uuid.UUID, cure: updateCure):
+    _cure = get_cure_by_id(db, cure_id)
+    _cure.updated_at = datetime.datetime.now()
+    _cure.payed_raw_material_price += cure.price
     db.commit()
     db.refresh(_cure)
     return _cure

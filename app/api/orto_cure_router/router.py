@@ -22,6 +22,7 @@ from app.api.orto_cure_router.crud import (
     get_cures_for_schedule,
     pay_with_balance_cure,
     end_cure,
+    pay_with_technic_cure,
 )
 from app.api.schemas import Response, OrtoCureSchema, updateCure, PaymentsSchema, Status
 from app.api.staffs.router import date_components
@@ -67,6 +68,7 @@ async def get_cures_for_staff_route(
             "staff_surname": staff.surname,
             "created_at": cure.created_at,
             "raw_material_price": cure.raw_material_price,
+            "payed_raw_material_price": cure.payed_raw_material_price,
             "technic_name": cure.technic_name,
         }
         for cure, staff, user in _cure
@@ -102,6 +104,7 @@ async def get_cures_for_staff_route(
             "staff_name": staff.name,
             "description": user.description,
             "raw_material_price": cure.raw_material_price,
+            "payed_raw_material_price": cure.payed_raw_material_price,
             "staff_surname": staff.surname,
             "created_at": cure.created_at,
             "technic_name": cure.technic_name,
@@ -152,7 +155,6 @@ async def get_cure_service(
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
 ):
-
     _cure = get_cure_with_service(db, cure_id)
     result_dict = []
     for _cure_service, _service in _cure:
@@ -163,6 +165,7 @@ async def get_cure_service(
                     "service_name": _cure_service.service_name,
                     "tooth_id": _cure_service.tooth_id,
                     "price": _cure_service.service_price,
+                    "technic_price": _cure_service.raw_material_price,
                     "created_at": _cure_service.created_at,
                 }
             )
@@ -173,6 +176,7 @@ async def get_cure_service(
                     "service_name": _service.name,
                     "tooth_id": _cure_service.tooth_id,
                     "price": _service.price,
+                    "technic_price": _cure_service.raw_material_price,
                     "created_at": _cure_service.created_at,
                 }
             )
@@ -306,6 +310,7 @@ async def get_cure_by_id_route(
         "staff_name": _cure[2].name,
         "staff_surname": _cure[2].surname,
         "raw_material_price": _cure[0].raw_material_price,
+        "payed_raw_material_price": _cure[0].payed_raw_material_price,
         "created_at": _cure[0].created_at,
     }
 
@@ -352,6 +357,7 @@ async def get_cures_route(
                 "technic_name": cure.technic_name,
                 "raw_material_price": cure.raw_material_price,
                 "created_at": cure.created_at,
+                "payed_raw_material_price": cure.payed_raw_material_price,
             }
         )
     return Response(
@@ -428,6 +434,17 @@ async def update_cure_route(
     _=Depends(get_current_user),
 ):
     pay_with_balance_cure(db=db, cure_id=cure_id, cure=cure)
+    return Response(code=200, status="ok", message="updated").model_dump()
+
+
+@router.put("/pay-technic/{cure_id}")
+async def update_cure_route(
+    cure_id: uuid.UUID,
+    cure: updateCure,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
+    pay_with_technic_cure(db=db, cure_id=cure_id, cure=cure)
     return Response(code=200, status="ok", message="updated").model_dump()
 
 

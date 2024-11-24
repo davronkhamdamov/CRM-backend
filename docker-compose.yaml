@@ -2,7 +2,10 @@ version: '3.8'
 
 services:
   web:
-    image: prousername/crm:latest
+    #    image: prousername/crm:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     command: sh -c "uvicorn app.main:app --reload --port=8000 --host=0.0.0.0"
@@ -19,12 +22,12 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  crm-front:
-    image: prousername/crm-front:tagname
-    ports:
-      - "3000:80"
-    depends_on:
-      - web
+#  crm-front:
+#    image: prousername/crm-front:tagname
+#    ports:
+#      - "3000:80"
+#    depends_on:
+#      - web
 
 volumes:
   postgres_data:

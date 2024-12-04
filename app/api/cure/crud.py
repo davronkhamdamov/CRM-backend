@@ -354,7 +354,7 @@ def count_cure_for_staff(db: Session, staff_id: uuid.UUID):
 
 
 def delete_cure(db: Session, cure_id: uuid.UUID):
-    db.query(CureService).filter(Cure.id == CureService.cure_id).delete()
+    db.query(CureService).filter(cure_id == CureService.cure_id).delete()
     _cure = get_cure_by_id(db, cure_id)
     db.delete(_cure)
     db.commit()

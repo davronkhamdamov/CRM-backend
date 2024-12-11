@@ -80,7 +80,6 @@ def delete_user(db: Session, user_id: uuid.UUID):
     user_cures = db.query(Cure).filter(Cure.user_id == user_id).all()
     for cure in user_cures:
         db.query(CureService).filter(CureService.cure_id == cure.id).delete()
-
     db.query(Cure).filter(Cure.user_id == user_id).delete()
     db.query(Users).filter(Users.id == user_id).delete()
     db.commit()

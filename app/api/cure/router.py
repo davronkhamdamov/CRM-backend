@@ -18,7 +18,6 @@ from app.api.cure.crud import (
     update_cure_status,
     get_cures_for_staff_count,
     get_debt_cures,
-    get_cures_count,
     get_cures_for_schedule,
     pay_with_balance_cure,
     end_cure,
@@ -329,8 +328,7 @@ async def get_cures_route(
         elif key.startswith("filters[is_done]"):
             filters["status"].append(req.query_params.getlist(key)[0])
 
-    _cure = get_cures(db, staff, start_time, end_time, filters, skip, limit)
-    _cure_count = get_cures_count(db, staff, start_time, end_time, filters)
+    _cure, _cure_count = get_cures(db, staff, start_time, end_time, filters, skip, limit)
     result_dict = []
     for cure, staff, user in _cure:
         result_dict.append(

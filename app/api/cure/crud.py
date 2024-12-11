@@ -77,7 +77,76 @@ def get_cures(
         .offset(skip * limit)
         .limit(limit)
         .all()
+    ), query.count()
+
+
+def get_cures_by_user_id(
+    db: Session,
+    user_id: uuid.UUID = None,
+    start_date_str: str = None,
+    end_date_str: str = None,
+    filters=None,
+    skip: int = 0,
+    limit: int = 10,
+):
+    query = (
+        db.query(Cure, Staffs, Users)
+        .select_from(Cure)
+        .join(Users, Cure.user_id == Users.id)
+        .join(Staffs, Staffs.id == Cure.staff_id)
+        .filter(Cure.user_id == user_id)
     )
+    if filters["status"] and filters["status"] != [""]:
+        query = query.filter(Cure.is_done.in_(filters["status"]))
+    if len(filters["pay"]):
+        for pay in filters["pay"]:
+            if pay == "payed":
+                query = query.filter(
+                    or_(Cure.payed_price == Cure.price, Cure.price < Cure.payed_price)
+                ).filter(Cure.is_done == "Yakunlandi")
+            elif pay == "not_fully_payed":
+                query = (
+                    query.filter(Cure.payed_price > 0)
+                    .filter(Cure.price != Cure.payed_price)
+                    .filter(Cure.price > Cure.payed_price)
+                )
+            elif pay == "not_payed":
+                query = query.filter(Cure.payed_price == 0).filter(
+                    Cure.is_done == "Yakunlandi"
+                )
+            elif pay == "waiting":
+                query = (
+                    query.filter(Cure.payed_price == 0)
+                    .filter(Cure.is_done == "Kutilmoqda")
+                    .filter(Cure.price == 0)
+                )
+
+    if start_date_str:
+        try:
+            start_date = date.fromisoformat(start_date_str)
+            start_date = datetime.datetime(
+                start_date.year, start_date.month, start_date.day
+            )
+            query = query.filter(Cure.start_time >= start_date)
+        except ValueError:
+            pass
+
+    if end_date_str:
+        try:
+            end_date = date.fromisoformat(end_date_str)
+            end_date = datetime.datetime(
+                end_date.year, end_date.month, end_date.day, 23, 59, 59
+            )
+            query = query.filter(Cure.start_time <= end_date)
+        except ValueError:
+            pass
+    return (
+        query.order_by(Cure.is_done == "Bekor qilingan")
+        .order_by(Cure.created_at.desc())
+        .offset(skip * limit)
+        .limit(limit)
+        .all()
+    ), query.count()
 
 
 def get_cures_for_schedule(

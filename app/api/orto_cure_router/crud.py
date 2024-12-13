@@ -385,6 +385,7 @@ def update_cure(db: Session, cure: OrtoCureSchema):
     _cure.updated_at = (datetime.datetime.now().isoformat(),)
     _cure.phone_number = cure.phone_number
     _cure.technic_name = cure.technic_name
+    _cure.raw_material_price = cure.raw_material_price
     db.commit()
     db.refresh(_cure)
     return _cure
